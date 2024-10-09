@@ -272,7 +272,7 @@
             Swal.fire({
                 title: "QR Code Generated",
                 text: "Do you want to send this QR Code via email?",
-                html: qrContainer,
+                html:" Are you sure you want to send this QR Code?",
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Send it!',
                 cancelButtonText: 'Cancel',
