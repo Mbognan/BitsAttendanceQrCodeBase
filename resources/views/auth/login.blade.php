@@ -93,7 +93,7 @@
                         <div class="login-logo">
                             <a href="#">
                                 <img src="images/icon/Bits.png" alt="CoolAdmin">
-                                <h1>Welcome Bits Officers</h1>
+                                <h1>Welcome Bits Memmbers!</h1>
                                 <x-auth-session-status class="mb-4" :status="session('status')" />
                             </a>
                         </div>
