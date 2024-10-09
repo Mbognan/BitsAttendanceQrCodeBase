@@ -47,4 +47,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+    public function attendanceLogs(){
+        return $this->hasMany(Attendace::class, 'user_id');
+    }
 }

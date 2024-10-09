@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class EventRecord extends Model
 {
     use HasFactory;
+
+    public function event(){
+        return $this->hasMany(Attendace::class, 'event_record_id');
+    }
 }

@@ -14,5 +14,16 @@ class Attendace extends Model
         'event_record_id',
         'status',
         'session',
+        'event_day',
+        'login_log',
+        'logout_log'
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function event(){
+        return $this->belongsTo(EventRecord::class, 'event_record_id');
+    }
 }

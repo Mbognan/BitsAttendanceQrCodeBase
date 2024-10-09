@@ -185,19 +185,6 @@
                                             <a class="js-acc-btn" href="#">john doe</a>
                                         </div>
                                         <div class="account-dropdown js-dropdown">
-                                            <div class="info clearfix">
-                                                <div class="image">
-                                                    <a href="#">
-                                                        <img src="images/icon/avatar-01.jpg" alt="John Doe" />
-                                                    </a>
-                                                </div>
-                                                <div class="content">
-                                                    <h5 class="name">
-                                                        <a href="#">john doe</a>
-                                                    </h5>
-                                                    <span class="email">johndoe@example.com</span>
-                                                </div>
-                                            </div>
                                             <div class="account-dropdown__body">
                                                 <div class="account-dropdown__item">
                                                     <a href="#">
@@ -207,14 +194,8 @@
                                                     <a href="#">
                                                         <i class="zmdi zmdi-settings"></i>Setting</a>
                                                 </div>
-                                                <div class="account-dropdown__item">
-                                                    <a href="#">
-                                                        <i class="zmdi zmdi-money-box"></i>Billing</a>
-                                                </div>
                                             </div>
                                             <div class="account-dropdown__footer">
-
-
                                                 <form method="POST" action="{{ route('logout') }}">
                                                     @csrf
                                                     <a href="{{ route('logout') }}"
@@ -291,7 +272,7 @@
             Swal.fire({
                 title: "QR Code Generated",
                 text: "Do you want to send this QR Code via email?",
-                html: qrContainer,
+                html:" Are you sure you want to send this QR Code?",
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Send it!',
                 cancelButtonText: 'Cancel',

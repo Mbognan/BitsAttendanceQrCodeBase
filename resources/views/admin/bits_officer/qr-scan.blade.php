@@ -33,8 +33,7 @@
     <link href="{{ asset('asset/vendor/slick/slick.css') }}" rel="stylesheet" media="all">
     <link href="{{ asset('asset/vendor/select2/select2.min.css') }}" rel="stylesheet" media="all">
     <link href="{{ asset('asset/vendor/perfect-scrollbar/perfect-scrollbar.css') }}" rel="stylesheet" media="all">
-
-    <!-- Main CSS-->
+    <!-- Main    CSS-->
     <link href="{{ asset('asset/css/theme.css') }}" rel="stylesheet" media="all">
 
 
@@ -322,7 +321,7 @@
         </header>
 
         <!-- END HEADER MOBILE -->
-        <div class="page-content--bgf7">
+        <div class="page-content--bgf7" style="background-color: #e5e5e5">
 
             <section class="au-breadcrumb2">
                 <div class="container">
@@ -454,10 +453,44 @@
 
                         </div>
                     </div>
+                    <div class="table-data__tool">
+                        <div class="table-data__tool-left">
+                            <div class="rs-select2--light rs-select2--md">
+                                <select class="js-select2" name="property">
+                                    <option selected="selected">All Properties</option>
+                                    <option value="">Option 1</option>
+                                    <option value="">Option 2</option>
+                                </select>
+                                <div class="dropDownSelect2"></div>
+                            </div>
+                            <div class="rs-select2--light rs-select2--sm">
+                                <select class="js-select2" name="time">
+                                    <option selected="selected">Today</option>
+                                    <option value="">3 Days</option>
+                                    <option value="">1 Week</option>
+                                </select>
+                                <div class="dropDownSelect2"></div>
+                            </div>
+                            <button class="au-btn-filter">
+                                <i class="zmdi zmdi-filter-list"></i>filters</button>
+                        </div>
+
+                    </div>
+                    <div class="card">
+                        <div class="card-body table-responsive">
+                            {{ $dataTable->table() }}
+                      </div>
+
+                    </div>
             </section>
 
+
+
+
             </section>
-            <section class="p-t-60 p-b-20">
+
+
+            <section class="statistic-chart">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-12">
@@ -468,6 +501,7 @@
                     </div>
                 </div>
             </section>
+
 
 
         </div>
@@ -495,31 +529,41 @@
     <script src="{{ asset('asset/js/main.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+
+     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap4.js"></script>
+    {{--<script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.tailwindcss.js"></script> --}}
     <script>
+        const eventDropdown = document.getElementById('event');
+        const dayDropdown = document.getElementById('day');
+        const sessionDropdown = document.getElementById('session');
+        const statusDropdown = document.getElementById('status');
+        const eventTitle = document.getElementById('eventTitle');
 
-    const eventDropdown = document.getElementById('event');
-    const dayDropdown = document.getElementById('day');
-    const sessionDropdown = document.getElementById('session');
-    const statusDropdown = document.getElementById('status');
-    const eventTitle = document.getElementById('eventTitle');
+        function updateTitle() {
+            const selectedEvent = eventDropdown.value !== "0" ? eventDropdown.value : "None";
+            const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` : "None";
+            const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "None";
+            const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "None";
 
-    function updateTitle() {
-        const selectedEvent = eventDropdown.value !== "0" ? eventDropdown.value : "";
-        const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` : "";
-        const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "";
-        const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "";
-
-        eventTitle.innerHTML = `<strong class="text-primary">Attendance Log</strong><br>
+            eventTitle.innerHTML = `<strong class="text-primary">Attendance Log</strong><br>
             <span class="event-detail">Event: ${selectedEvent}</span> <br>
             <span class="day-detail">Day: ${selectedDay}</span> |
             <span class="session-detail">Session: ${selectedSession}</span> |
             <span class="status-detail">Status: ${selectedStatus}</span>`;
 
-    }
-    eventDropdown.addEventListener('change', updateTitle);
-    dayDropdown.addEventListener('change', updateTitle);
-    sessionDropdown.addEventListener('change', updateTitle);
-    statusDropdown.addEventListener('change', updateTitle);
+        }
+        eventDropdown.addEventListener('change', updateTitle);
+        dayDropdown.addEventListener('change', updateTitle);
+        sessionDropdown.addEventListener('change', updateTitle);
+        statusDropdown.addEventListener('change', updateTitle);
 
         let lastScanTime = 0;
         const debounceDelay = 1000;
@@ -552,7 +596,7 @@
             let newEntry = {
                 name: `${student.first_name} ${student.middle_initial} ${student.last_name}`,
                 time: currentTime,
-                status:`${student.status}`
+                status: `${student.status}`
 
             };
 
@@ -596,7 +640,7 @@
             }, 2500);
         }
 
-            function onScanSuccess(decodedText, decodedResult) {
+        function onScanSuccess(decodedText, decodedResult) {
             const currentTime = new Date().getTime();
 
             const selectedEvent = eventDropdown.value !== "0" ? eventDropdown.value : "";
@@ -610,59 +654,92 @@
                 console.log(`Code matched = ${decodedText}`, decodedResult);
                 let studentId = decodedText;
                 let currentDateTime = new Date();
-                let currentTimeFormatted = currentDateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+                let currentTimeFormatted = currentDateTime.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
                 let currentDate = currentDateTime.toLocaleDateString();
 
                 fetch('/officer/found-student', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        id: studentId,
-                        event:selectedEvent,
-                        day:selectedDay,
-                        sessionDay:selectedSession,
-                        status:selectedStatus,
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            id: studentId,
+                            event: selectedEvent,
+                            day: selectedDay,
+                            sessionDay: selectedSession,
+                            status: selectedStatus,
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        updateScanHistory(data.student);
-                        showToast(
-                            `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                            true);
-                    } else {
-                        showToast('Student not found');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('There was an error that occurred');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.login) {
+                                if (data.validation) {
+                                    showToast(
+                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
+                                        true);
+                                } else {
+                                    updateScanHistory(data.student);
+                                    let attendanceTable = $('#attendance-table').DataTable();
+                                    if (attendanceTable) {
+                                            attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
+                                        }
+                                    showToast(
+                                        `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                        true);
+
+                                }
+                            } else {
+                                if (data.validation) {
+                                    showToast(
+                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
+                                        true);
+                                } else {
+                                    updateScanHistory(data.student);
+                                    let attendanceTable = $('#attendance-table').DataTable();
+                                    if (attendanceTable) {
+                                            attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
+                                        }
+                                    showToast(
+                                        `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                        true);
+                                }
+                            }
+
+
+                        } else {
+                            showToast('Student not found');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('There was an error that occurred');
+                    });
             }
         }
 
-            function onScanFailure(error) {
-                console.warn(`Code scan error = ${error}`);
-            }
+        function onScanFailure(error) {
+            console.warn(`Code scan error = ${error}`);
+        }
 
-            let html5QrcodeScanner = new Html5QrcodeScanner(
-                "reader", {
-                    fps: 10,
-                    qrbox: {
-                        width: 250,
-                        height: 250
-                    }
-                },
-                false
-            );
+        let html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader", {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 250
+                }
+            },
+            false
+        );
 
-            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     </script>
-
 </body>
 
 

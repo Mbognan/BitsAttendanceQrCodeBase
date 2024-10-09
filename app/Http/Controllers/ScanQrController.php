@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\Officer\AttendanceDataTable;
 use App\Models\Attendace;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class ScanQrController extends Controller
 {
-    public function indexScan(){
-        return view('admin.bits_officer.qr-scan');
+    public function indexScan(AttendanceDataTable $datatable){
+        return $datatable->render('admin.bits_officer.qr-scan');
     }
 
     // public function findScan(Request $request){
@@ -59,67 +60,182 @@ class ScanQrController extends Controller
     ->where('session', $sessionDay)
     ->first();
 
-
-    if ($attendanceLog) {
-
-        if ($attendanceLog->status === 'login') {
-
-            $attendanceLog->status = 'log-out';
-            $attendanceLog->save();
-
+    if ($status == 'login') {
+        if( $attendanceLog && $attendanceLog->status == 'login') {
             return response()->json([
                 'success' => true,
+                'validation' => true,
+                'login' => true,
                 'student' => [
                     'first_name' => $student->first_name,
                     'middle_initial' => $student->middle_initial,
                     'last_name' => $student->last_name,
                     'year_level' => $student->year_level,
                     'status' => $attendanceLog->status,
-                    'logout_log' => 1,
                 ],
-                'message' => 'Logged out successfully',
+                'message' => 'Student Already Login',
             ]);
-        } else {
+        }else {
 
-            $attendanceLog->status = 'login';
-            $attendanceLog->save();
+            $attendance_log =  Attendace::create([
+                 'user_id' => $student->id,
+                 'event_record_id' => $currentEventId,
+                 'status' => 'login',
+                 'login_log' => 1,
+                 'session' => $sessionDay,
+                 'event_day' => $day,
+
+
+             ]);
+
+             return response()->json([
+                 'success' => true,
+                 'validation' => false,
+                 'login' => true,
+
+                 'student' => [
+                     'first_name' => $student->first_name,
+                     'middle_initial' => $student->middle_initial,
+                     'last_name' => $student->last_name,
+                     'year_level' => $student->year_level,
+                     'status' => 'login'
+                 ],
+                 'message' => 'Logged in successfully',
+             ]);
+         }
+
+
+    }else if($status == 'log-out'){
+        if ($attendanceLog && $attendanceLog->status == 'log-out') {
 
             return response()->json([
                 'success' => true,
+                'validation' => true,
+                'login' => false,
+
                 'student' => [
                     'first_name' => $student->first_name,
                     'middle_initial' => $student->middle_initial,
                     'last_name' => $student->last_name,
                     'year_level' => $student->year_level,
-                    'status' => $attendanceLog->status
+                    'status' => $attendanceLog->status,
                 ],
-                'message' => 'Logged in successfully',
+                'message' => 'Student Already Logout',
             ]);
-        }
-    } else {
 
-        Attendace::create([
-            'user_id' => $student->id,
-            'event_record_id' => $currentEventId,
-            'status' => 'login',
-            'login_log' => 1,
-            'session' => $sessionDay,
-            'event_day' => $day,
+    } else if($attendanceLog && $attendanceLog->status == 'login') {
 
-
-        ]);
+        $attendanceLog->status = 'log-out';
+        $attendanceLog->logout_log = 1;
+        $attendanceLog->save();
 
         return response()->json([
             'success' => true,
+            'validation' => false,
+            'login' => false,
             'student' => [
                 'first_name' => $student->first_name,
                 'middle_initial' => $student->middle_initial,
                 'last_name' => $student->last_name,
                 'year_level' => $student->year_level,
+                'status' => 'log-out'
             ],
-            'message' => 'Logged in successfully',
+            'message' => 'Logged out successfully',
         ]);
+    }else{
+        $attendance_log =  Attendace::create([
+                    'user_id' => $student->id,
+                    'event_record_id' => $currentEventId,
+                    'status' => 'log-out',
+                    'logout_log' => 1,
+                    'session' => $sessionDay,
+                    'event_day' => $day,
+
+
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'validation' => false,
+                    'login' => false,
+                    'student' => [
+                        'first_name' => $student->first_name,
+                        'middle_initial' => $student->middle_initial,
+                        'last_name' => $student->last_name,
+                        'year_level' => $student->year_level,
+                        'status' => 'log-out'
+                    ],
+                    'message' => 'Logged out successfully',
+                ]);
     }
+    }
+
+
+
+
+
+
+    // if ($attendanceLog) {
+
+    //     if ($attendanceLog->status === 'login') {
+
+    //         $attendanceLog->status = 'log-out';
+    //         $attendanceLog->save();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'student' => [
+    //                 'first_name' => $student->first_name,
+    //                 'middle_initial' => $student->middle_initial,
+    //                 'last_name' => $student->last_name,
+    //                 'year_level' => $student->year_level,
+    //                 'status' => $attendanceLog->status,
+    //                 'logout_log' => 1,
+    //             ],
+    //             'message' => 'Logged out successfully',
+    //         ]);
+    //     } else {
+
+    //         $attendanceLog->status = 'login';
+    //         $attendanceLog->save();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'student' => [
+    //                 'first_name' => $student->first_name,
+    //                 'middle_initial' => $student->middle_initial,
+    //                 'last_name' => $student->last_name,
+    //                 'year_level' => $student->year_level,
+    //                 'status' => $attendanceLog->status
+    //             ],
+    //             'message' => 'Logged in successfully',
+    //         ]);
+    //     }
+    // } else {
+
+    //    $attendance_log =  Attendace::create([
+    //         'user_id' => $student->id,
+    //         'event_record_id' => $currentEventId,
+    //         'status' => 'login',
+    //         'login_log' => 1,
+    //         'session' => $sessionDay,
+    //         'event_day' => $day,
+
+
+    //     ]);
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'student' => [
+    //             'first_name' => $student->first_name,
+    //             'middle_initial' => $student->middle_initial,
+    //             'last_name' => $student->last_name,
+    //             'year_level' => $student->year_level,
+    //             'status' => 'login'
+    //         ],
+    //         'message' => 'Logged in successfully',
+    //     ]);
+    // }
 }
 
 }
