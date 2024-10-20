@@ -1,9 +1,9 @@
 <?php
 
-namespace App\DataTables\Admin;
+namespace App\DataTables\Officer;
 
-use App\Models\BitsOfficer;
-use App\Models\User;
+use App\Models\EventRecord;
+use App\Models\EventRecordCreate;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -13,7 +13,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class BitsOfficerDataTable extends DataTable
+class EventRecordCreateDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -23,34 +23,21 @@ class BitsOfficerDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', function($query){
-                $delete = '<a href="#" class="item denied"><i class="fa fa-trash text-danger fa-lg"></i></a>';
-                $edit = '<a href="#" class="item " ><i class="fa fa-pencil-square-o text-primary  fa-lg"></i></a>';
-                return $edit." ".$delete;
-            })
-            ->addColumn('full_name', function ($row) {
-                return $row->first_name . ' ' . $row->middle_initial . ' ' . $row->last_name;
-            })
-            ->addColumn('status', function($query){
-             $switch = '<label class="switch switch-3d switch-success mr-3">
-                      <input type="checkbox" class="switch-input" checked="true">
-                      <span class="switch-label"></span>
-                      <span class="switch-handle"></span>
-                    </label>';
-
-                    return $switch;
-            })
-
-            ->rawColumns(['action','status'])
+        ->addColumn('action', function($query){
+            $delete = '<a href="#" class="item denied delete-item"><i class="fa fa-trash text-danger fa-lg"></i></a>';
+            $edit = '<a href="#" class="item " ><i class="fa fa-pencil-square-o text-primary  fa-lg"></i></a>';
+            return $edit." ".$delete;
+        })
+        ->rawColumns(['action'])
             ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(User $model): QueryBuilder
+    public function query(EventRecord $model): QueryBuilder
     {
-        return $model->newQuery()->where('user_type', 'officer');
+        return $model->newQuery();
     }
 
     /**
@@ -59,7 +46,7 @@ class BitsOfficerDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('bitsofficer-table')
+                    ->setTableId('eventrecordcreate-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
                     //->dom('Bfrtip')
@@ -82,16 +69,14 @@ class BitsOfficerDataTable extends DataTable
     {
         return [
 
-            Column::make('full_name')
-            ->title('Full Name')
-            ->width(200),
-
-            Column::make('student_id')->width(200),
-            Column::make('email')->width(200),
+            Column::make('id'),
+            Column::make('title'),
+            Column::make( 'academic_year')->title('Academic Year'),
+            Column::make('year'),
             Column::computed('action')
             ->exportable(false)
             ->printable(false)
-            ->width(200)
+            ->width(60)
             ->addClass('text-center'),
         ];
     }
@@ -101,6 +86,6 @@ class BitsOfficerDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'BitsOfficer_' . date('YmdHis');
+        return 'EventRecordCreate_' . date('YmdHis');
     }
 }

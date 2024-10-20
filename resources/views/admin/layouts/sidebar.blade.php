@@ -50,6 +50,14 @@
                         <a href="{{ route('officer.pending') }}">
                             <i class="far fa-check-square"></i>Pending Accounts</a>
                     </li>
+                    <li>
+                        <a href="{{ route('officer.event.index') }}">
+                            <i class="fas fa-table"></i>Events Records</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('officer.createEvent') }}">
+                            <i class="fas fa-table"></i>Create Event</a>
+                    </li>
                     @endif
                     {{-- <li>
                         <a href="table.html">

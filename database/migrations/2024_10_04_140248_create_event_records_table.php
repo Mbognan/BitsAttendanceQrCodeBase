@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('academic_year');
             $table->string('year');
+            $table->boolean('status');
             $table->timestamps();
         });
     }

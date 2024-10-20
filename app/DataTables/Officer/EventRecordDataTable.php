@@ -3,6 +3,7 @@
 namespace App\DataTables\Officer;
 
 use App\Models\Attendace;
+use App\Models\EventRecord;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -13,7 +14,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class AttendanceDataTable extends DataTable
+class EventRecordDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -24,18 +25,17 @@ class AttendanceDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
 
+        ->addColumn('user_id', function($row) {
 
-            ->addColumn('user_id', function($row) {
-
-                return $row->user ? $row->user->first_name. ' ' . $row->user->middle_initial .' '. $row->user->last_name : 'N/A';
-            })
-            ->addColumn('event_record_id', function($row){
-                return $row->event->title;
-            })
-            ->editColumn('created_at', function ($row) {
-                return Carbon::parse($row->created_at)->format('F j, Y');
-            })
-            ->setRowId('id');
+            return $row->user ? $row->user->first_name. ' ' . $row->user->middle_initial .' '. $row->user->last_name : 'N/A';
+        })
+        ->addColumn('event_record_id', function($row){
+            return $row->event->title;
+        })
+        ->editColumn('created_at', function ($row) {
+            return Carbon::parse($row->created_at)->format('F j, Y');
+        })
+        ->setRowId('id');
     }
 
     /**
@@ -52,7 +52,7 @@ class AttendanceDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('attendance-table')
+                    ->setTableId('eventrecord-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
                     //->dom('Bfrtip')
@@ -74,14 +74,13 @@ class AttendanceDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-
             Column::make('user_id')->title('Name')->width(150),
             Column::make('event_record_id')->title('Event'),
             Column::make('event_day')->title('Day'),
             Column::make('session')->title('Session'),
             Column::make('login_log'),
             Column::make('logout_log'),
-            Column::make('created_at'),
+            Column::make('created_at')->title('Date'),
         ];
     }
 
@@ -90,6 +89,6 @@ class AttendanceDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Attendance_' . date('YmdHis');
+        return 'EventRecord_' . date('YmdHis');
     }
 }

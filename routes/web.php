@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BitsOfficerController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\OfficerDashbaord;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\ProfileController;
@@ -48,6 +49,10 @@ Route::group(['middleware' => ['auth','officer'], 'prefix' => 'officer', 'as' =>
     Route::post('/send-qr-code-email', [StudentController::class, 'sendQrCodeEmail'])->name('sendQrCodeEmail');
     Route::get('/scan-qr-code', [ScanQrController::class, 'indexScan'])->name('index.scanqr');
     Route::post('/found-student', [ScanQrController::class, 'findScan'])->name('foundStudent');
+    Route::get('/event-scanner', [EventController::class, 'index'])->name('event.index');
+    Route::get('/ceate-event', [EventController::class, 'createEvent'])->name('createEvent');
+    Route::post('/store-event', [EventController::class, 'storeEvent'])->name('storeEvent');
+    Route::get('/export-attendance', [EventController::class, 'export'])->name('export');
 });
 //STUDENT ROUTES
 Route::group(['middleware' => ['auth','student'], 'prefix' => 'student', 'as' => 'student.'], function(){
