@@ -375,7 +375,7 @@
                                     <select name="event" id="event" class="form-control">
                                         <option>Please select Event</option>
                                         <option value="1">COTE Week</option>
-                                        <option value="2">Valentines Day</option>
+                                        <option value="4">Valentines Day</option>
                                         <option value="3">Siglakas 2023-2024</option>
                                     </select>
                                 </div>

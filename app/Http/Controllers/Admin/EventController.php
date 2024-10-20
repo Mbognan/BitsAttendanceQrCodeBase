@@ -6,6 +6,7 @@ use App\DataTables\Officer\EventRecordCreateDataTable;
 use App\DataTables\Officer\EventRecordDataTable;
 use App\Exports\AttendanceExport;
 use App\Http\Controllers\Controller;
+use App\Models\Attendace;
 use App\Models\EventRecord;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -21,7 +22,10 @@ class EventController extends Controller
     }
 
     public function export(){
-        return Excel::download(new AttendanceExport, 'users.xlsx');
+        $event_record = 1;
+        $year = "2021-2022";
+
+        return Excel::download(new AttendanceExport($event_record, $year), 'attendance.xlsx');
     }
 
     public function storeEvent(Request $request){

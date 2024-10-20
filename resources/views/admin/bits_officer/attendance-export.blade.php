@@ -5,15 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance Table</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-
-<body>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -21,92 +13,152 @@
             font-size: 14px;
             text-align: center;
             border: 2px solid black;
-            /* Solid border around the entire table */
         }
 
-        thead th {
-            background-color: #f2f2f2;
-            padding: 10px;
-            border: 2px solid black;
-            /* Solid border for header cells */
-        }
-
-        td,
-        th {
-            border: 2px solid black;
-            /* Solid border for all table cells */
+        th,
+        td {
+            border: 1px solid black;
             padding: 8px;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        tbody td {
-            color: red;
-            /* Font color for data cells */
-        }
-
-        thead th[colspan="3"] {
-            font-size: 12px;
-            padding: 15px 5px;
-        }
-
-        thead th[colspan="16"] {
-            background-color: #d0e0d0;
-            font-weight: bold;
-            padding: 12px;
-            font-size: 16px;
             text-align: center;
         }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .red {
+            color: red;
+        }
     </style>
+</head>
 
+<body>
     <table>
-        <thead style="border: 2px solid black;">
+        <thead>
             <!-- Main Title Row -->
-            <tr style="border: 2px solid black;">
-                <th colspan="31" style="text-align: center;">FIRST YEAR: 1ST SEMESTER A.Y. 2023-2024</th>
-            </tr>
-            <!-- Event Names -->
-            <tr style="border: 2px solid black;">
-                <th style="text-align: center;border: 2px solid black;" rowspan="4">NAMES</th>
-                <th style="text-align: center;border: 2px solid black;" colspan="6">Siglakas</th>
-            </tr>
-            <!-- Event Dates -->
-            <tr style="border: 2px solid black;">
-                <th style="text-align: center;border: 2px solid black;" colspan="6">AUGUST 4, 2023</th>
-            </tr>
-            <!-- Morning and Afternoon -->
-            <tr style="border: 2px solid black;">
-                <th style="text-align: center;border: 2px solid black;" colspan="3">Morning</th>
-                <th style="text-align: center;border: 2px solid black;" colspan="3">Afternoon</th>
-            </tr>
-            <!-- Log in/out + Total -->
-            <tr style="border: 2px solid black;">
-                <th style="text-align: center;border: 2px solid black;">LOG IN</th>
-                <th style="text-align: center;border: 2px solid black;">LOG OUT</th>
-                <th style="text-align: center;border: 2px solid black; color: red;">TOTAL</th>
-                <th style="text-align: center;border: 2px solid black;">LOG IN</th>
-                <th style="text-align: center;border: 2px solid black;">LOG OUT</th>
-                <th style="text-align: center;border: 2px solid black; color: red;">TOTAL</th>
+            <tr>
+                <th style="border: 2px solid black; text-align: center;" rowspan="4">NAMES</th>
+                @php
+                    // Group attendance by event
+                    $groupedByEvent = $attendance->groupBy('event_record_id');
+                @endphp
 
+                @foreach ($groupedByEvent as $eventId => $records)
+                    @php
+                        $eventDays = $records->groupBy('event_day'); // Group by event_day
+                        $numberOfDays = count($eventDays); // Get the number of unique event_days
+                        $colspan = $numberOfDays * 6; // Calculate colspan dynamically (6 columns per day)
+                    @endphp
+                    <th colspan="{{ $colspan }}" style="border: 2px solid black; text-align: center;">
+                        Event: {{ $records->first()->event->title }}
+                    </th>
+                @endforeach
+            </tr>
+
+            <!-- Event Day Row -->
+            <tr>
+                @foreach ($groupedByEvent as $eventId => $records)
+                    @php
+                        $eventDays = $records->groupBy('event_day'); // Group by event_day
+                    @endphp
+                    @foreach ($eventDays as $event_day => $userRecords)
+                        <th colspan="6" style="border: 2px solid black; text-align: center;">
+                            {{ $event_day }}
+                        </th>
+                    @endforeach
+                @endforeach
+            </tr>
+
+            <!-- Session Headers -->
+            <tr>
+                @foreach ($groupedByEvent as $eventId => $records)
+                    @php
+                        $eventDays = $records->groupBy('event_day'); // Group by event_day
+                    @endphp
+                    @foreach ($eventDays as $event_day => $userRecords)
+                        <th colspan="3" style="border: 2px solid black; text-align: center;">Morning</th>
+                        <th colspan="3" style="border: 2px solid black; text-align: center;">Afternoon</th>
+                    @endforeach
+                @endforeach
+            </tr>
+            <tr>
+                @foreach ($groupedByEvent as $eventId => $records)
+                    @php
+                        $eventDays = $records->groupBy('event_day'); // Group by event_day
+                    @endphp
+                    @foreach ($eventDays as $event_day => $userRecords)
+                        <th style="border: 2px solid black; text-align: center;">LOG IN</th>
+                        <th style="border: 2px solid black; text-align: center;">LOG OUT</th>
+                        <th style="text-align: center; border: 2px solid black; color: red;">TOTAL</th>
+                        <th style="border: 2px solid black; text-align: center;">LOG IN</th>
+                        <th style="border: 2px solid black; text-align: center;">LOG OUT</th>
+                        <th style="text-align: center; border: 2px solid black; color: red;">TOTAL</th>
+                    @endforeach
+                @endforeach
             </tr>
         </thead>
-        <tbody style="border: 2px solid black;">
-            <tr style="border: 2px solid black;">
-                <td style="text-align: center;border: 2px solid black;">ADACHI, Miaka Guillemer</td>
-                <td style="text-align: center;border: 2px solid black;">0</td>
-                <td style="text-align: center;border: 2px solid black;">0</td>
-                <td style="text-align: center;border: 2px solid black; color:red;"><b>0</b></td>
-                <td style="text-align: center;border: 2px solid black;">0</td>
-                <td style="text-align: center;border: 2px solid black;">0</td>
-                <td style="text-align: center;border: 2px solid black; color:red;"><b>0</b></td>
+        <!-- User Rows -->
+        <tbody>
+            @php
+                // Collect user attendance grouped by user
+                $userGroupedRecords = $attendance->groupBy('user_id');
+            @endphp
 
-            </tr>
+            @foreach ($userGroupedRecords as $userId => $userAttendance)
+                <tr>
+                    <td style="border: 1px solid black; text-align: center;">
+                        {{ $userAttendance->first()->user->first_name }} {{ $userAttendance->first()->user->last_name }}
+                    </td>
+                    @foreach ($groupedByEvent as $eventId => $records)
+                        @foreach ($records->groupBy('event_day') as $event_day => $dayRecords)
+                            @php
+                                $morningLogin = 0;
+                                $morningLogout = 0;
+                                $afternoonLogin = 0;
+                                $afternoonLogout = 0;
+
+                                // Calculate totals for this user on this day
+                                $foundRecord = false; // Track if the user has records for this event/day
+                                foreach ($dayRecords as $record) {
+                                    if ($record->user_id == $userId) {
+                                        $foundRecord = true; // Found a record for this user
+                                        if ($record->session == 'Morning') {
+                                            $morningLogin += $record->login_log == 1 ? 25 : ($record->login_log ?? 0);
+                                            $morningLogout += $record->logout_log == 1 ? 25 : ($record->logout_log ?? 0);
+                                        }
+                                        if ($record->session == 'Afternoon') {
+                                            $afternoonLogin += $record->login_log == 1 ? 25 : ($record->login_log ?? 0);
+                                            $afternoonLogout += $record->logout_log == 1 ? 25 : ($record->logout_log ?? 0);
+                                        }
+                                    }
+                                }
+
+                                $morningTotal = $morningLogin + $morningLogout;
+                                $afternoonTotal = $afternoonLogin + $afternoonLogout;
+                            @endphp
+
+                            <td style="border: 1px solid black; text-align: center;">
+                                {{ $foundRecord ? $morningLogin : '-' }}
+                            </td>
+                            <td style="border: 1px solid black; text-align: center;">
+                                {{ $foundRecord ? $morningLogout : '-' }}
+                            </td>
+                            <td style="border: 1px solid black; color: red; text-align: center;">
+                                <b>{{ $foundRecord ? $morningTotal : '-' }}</b>
+                            </td>
+                            <td style="border: 1px solid black; text-align: center;">
+                                {{ $foundRecord ? $afternoonLogin : '-' }}
+                            </td>
+                            <td style="border: 1px solid black; text-align: center;">
+                                {{ $foundRecord ? $afternoonLogout : '-' }}
+                            </td>
+                            <td style="border: 1px solid black; color: red; text-align: center;">
+                                <b>{{ $foundRecord ? $afternoonTotal : '-' }}</b>
+                            </td>
+                        @endforeach
+                    @endforeach
+                </tr>
+            @endforeach
         </tbody>
     </table>
 </body>
