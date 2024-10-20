@@ -350,21 +350,6 @@
 
 
 
-            <section class="welcome p-t-10">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            {{-- <h1 class="title-4">QR CODE SCANNER
-                                <span>Welcome BITS Officer</span>
-                            </h1> --}}
-                            <hr class="line-seprate">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-
-
 
             <section class="statistic-chart">
                 <div class="container">
@@ -374,9 +359,9 @@
                                 <div class="col-md-3">
                                     <select name="event" id="event" class="form-control">
                                         <option>Please select Event</option>
-                                        <option value="1">COTE Week</option>
-                                        <option value="4">Valentines Day</option>
-                                        <option value="3">Siglakas 2023-2024</option>
+                                        @foreach ($events as $event )
+                                        <option value="{{ $event->id }}">{{ $event->title }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-3">
@@ -548,7 +533,7 @@
         const eventTitle = document.getElementById('eventTitle');
 
         function updateTitle() {
-            const selectedEvent = eventDropdown.value !== "0" ? eventDropdown.value : "None";
+            const selectedEvent = eventDropdown.value !== "" ? eventDropdown.options[eventDropdown.selectedIndex].text : "None";
             const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` : "None";
             const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "None";
             const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "None";

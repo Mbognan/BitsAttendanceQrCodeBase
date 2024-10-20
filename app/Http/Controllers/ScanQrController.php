@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\DataTables\Officer\AttendanceDataTable;
 use App\Models\Attendace;
+use App\Models\EventRecord;
 use App\Models\User;
 use Illuminate\Http\Request;
 
 class ScanQrController extends Controller
 {
     public function indexScan(AttendanceDataTable $datatable){
-        return $datatable->render('admin.bits_officer.qr-scan');
+        $events = EventRecord::all();
+        return $datatable->render('admin.bits_officer.qr-scan', compact('events'));
     }
 
     // public function findScan(Request $request){
