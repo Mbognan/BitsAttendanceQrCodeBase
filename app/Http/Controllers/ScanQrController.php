@@ -6,6 +6,7 @@ use App\DataTables\Officer\AttendanceDataTable;
 use App\Models\Attendace;
 use App\Models\EventRecord;
 use App\Models\User;
+use Flasher\Laravel\Facade\Flasher;
 use Illuminate\Http\Request;
 
 class ScanQrController extends Controller
@@ -240,5 +241,42 @@ class ScanQrController extends Controller
     // }
 }
 
+
+public function sendCutOff(Request $request){
+    $users = User::where('user_type', 'student')->get();
+
+
+    $attendedUsers = Attendace::where('event_record_id', $request->event)
+        ->where('event_day', $request->day)
+        ->where('session', $request->sessionDay)
+        ->where('status', $request->status)
+        ->pluck('user_id');
+
+
+        $studentsWithoutAttendance = User::where('user_type', 'student')
+        ->whereNotIn('id', $attendedUsers)
+        ->get();
+
+
+        foreach ($studentsWithoutAttendance as $student){
+            Attendace::create([
+                'user_id' => $student->id,
+                'event_record_id' => $request->event,
+                'login_log' => 0,
+                'logout_log' => 0,
+                'event_day' => $request->day,
+                'session' => $request->sessionDay,
+                'status' => $request->status,
+                'created_at' => now(),
+            ]);
+        }
+
+        Flasher::addSuccess('Absent students marked successfully.');
+
+
+
+        return response()->json(['status' => 'success', 'message' => 'Absent students marked successfully.']);
+
+    }
 }
 

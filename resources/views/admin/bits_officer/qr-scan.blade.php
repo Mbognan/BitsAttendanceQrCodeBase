@@ -35,7 +35,7 @@
     <link href="{{ asset('asset/vendor/perfect-scrollbar/perfect-scrollbar.css') }}" rel="stylesheet" media="all">
     <!-- Main    CSS-->
     <link href="{{ asset('asset/css/theme.css') }}" rel="stylesheet" media="all">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
 </head>
 
@@ -367,17 +367,17 @@
                                 <div class="col-md-3">
                                     <select name="day" id="day" class="form-control">
                                         <option>Please select Day</option>
-                                        <option value="1">Day 1</option>
-                                        <option value="2">Day 2</option>
-                                        <option value="3">Day 3</option>
-                                        <option value="4">Day 4</option>
-                                        <option value="5">Day 5</option>
-                                        <option value="6">Day 6</option>
-                                        <option value="7">Day 7</option>
+                                        <option value="Day 1">Day 1</option>
+                                        <option value="Day 2">Day 2</option>
+                                        <option value="Day 3">Day 3</option>
+                                        <option value="Day 4">Day 4</option>
+                                        <option value="Day 5">Day 5</option>
+                                        <option value="Day 6">Day 6</option>
+                                        <option value="Day 7">Day 7</option>
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <select name="session" id="session" class="form-control">
+                                    <select name="session" id="sessionDay" class="form-control">
                                         <option>Please select Session</option>
                                         <option value="Morning">Morning</option>
                                         <option value="Afternoon">Afternoon</option>
@@ -431,12 +431,13 @@
 
                                     </div>
                                     <div class="au-task__footer">
-                                        <button class="au-btn au-btn-load js-load-btn">load more</button>
+                                        <button id="submitCutOffBtn" class="au-btn au-btn-load js-load-btn">Submit Cut Off</button>
                                     </div>
                                 </div>
                             </div>
 
                         </div>
+
                     </div>
                     <div class="table-data__tool">
                         <div class="table-data__tool-left">
@@ -522,13 +523,18 @@
      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
      <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
      <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap4.js"></script>
-    {{--<script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.js"></script>
-    <script src="https://cdn.datatables.net/2.1.7/js/dataTables.tailwindcss.js"></script> --}}
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <script>
+
+    @if(session('success'))
+        toastr.success("{{ session('success') }}");
+    @endif
+
+        const submitButton = document.getElementById('submitCutOffBtn');
         const eventDropdown = document.getElementById('event');
         const dayDropdown = document.getElementById('day');
-        const sessionDropdown = document.getElementById('session');
+        const sessionDropdown = document.getElementById('sessionDay');
         const statusDropdown = document.getElementById('status');
         const eventTitle = document.getElementById('eventTitle');
 
@@ -549,6 +555,51 @@
         dayDropdown.addEventListener('change', updateTitle);
         sessionDropdown.addEventListener('change', updateTitle);
         statusDropdown.addEventListener('change', updateTitle);
+
+
+        async function submitCutOffData() {
+        const selectedEvent = eventDropdown.value;
+        const selectedDay = dayDropdown.value;
+        const selectedSession = sessionDropdown.value;
+        const selectedStatus = statusDropdown.value;
+
+        try {
+            const response = await fetch('/officer/attendance-cutoff', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    event: selectedEvent,
+                    day: selectedDay,
+                    sessionDay: selectedSession,
+                    status: selectedStatus
+                })
+            });
+
+            if (response.ok) {
+            const result = await response.json();
+
+
+
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+
+        } else {
+            console.error('Error:', response.statusText);
+            toastr.error('An error occurred while marking students absent.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        toastr.error('Something went wrong.');
+    }
+    }
+
+
+    submitButton.addEventListener('click', submitCutOffData);
 
         let lastScanTime = 0;
         const debounceDelay = 1000;
@@ -598,7 +649,7 @@
 
         function renderScanHistory() {
             const historyContainer = document.getElementById('scan-history');
-            historyContainer.innerHTML = ''; // Clear the existing entries
+            historyContainer.innerHTML = '';
 
             scanHistory.forEach((entry) => {
                 const taskItem = document.createElement('div');
@@ -629,7 +680,7 @@
             const currentTime = new Date().getTime();
 
             const selectedEvent = eventDropdown.value !== "0" ? eventDropdown.value : "";
-            const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` : "";
+            const selectedDay = dayDropdown.value !== "0" ? `${dayDropdown.value}` : "";
             const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "";
             const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "";
 

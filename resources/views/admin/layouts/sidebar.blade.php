@@ -8,7 +8,7 @@
         <div class="menu-sidebar__content js-scrollbar1">
             <nav class="navbar-sidebar">
                 <ul class="list-unstyled navbar__list">
-                    <li class="active has-sub">
+                    <li  @if (Route::currentRouteName() === 'admin.dashboard') class="active has-sub" @elseif (Route::currentRouteName() === 'officer.dashboard')  class="active has-sub" @elseif (Route::currentRouteName() === 'student.dashboard')  class="active has-sub"@endif >
                         @if (auth()->user()->user_type == 'admin')
                         <a class="js-arrow" href="{{ route('admin.dashboard') }}">
                             <i class="fas fa-tachometer-alt"></i>Dashboard</a>
@@ -36,25 +36,25 @@
                         </ul> --}}
                      </li>
                      @if(auth()->user()->user_type == 'admin')
-                    <li>
+                    <li  @if (Route::currentRouteName() === 'admin.index') class="active has-sub" @endif>
                             <a href="{{ route('admin.index') }}">
                             <i class="fas fa-users"></i>Create Bits Account</a>
                     </li>
                     @endif
                     @if(auth()->user()->user_type == 'officer')
-                    <li>
+                    <li  @if (Route::currentRouteName() === 'officer.index.scanqr') class="active has-sub" @endif>
                         <a href="{{ route('officer.index.scanqr') }}">
                         <i class="fas fa-users"></i>Scan QR Code</a>
                     </li>
-                    <li>
+                    <li  @if (Route::currentRouteName() === 'officer.pending') class="active has-sub" @endif>
                         <a href="{{ route('officer.pending') }}">
                             <i class="far fa-check-square"></i>Pending Accounts</a>
                     </li>
-                    <li>
+                    <li  @if (Route::currentRouteName() === 'officer.event.index') class="active has-sub" @endif>
                         <a href="{{ route('officer.event.index') }}">
                             <i class="fas fa-table"></i>Events Records</a>
                     </li>
-                    <li>
+                    <li  @if (Route::currentRouteName() === 'officer.createEvent') class="active has-sub" @endif>
                         <a href="{{ route('officer.createEvent') }}">
                             <i class="fas fa-table"></i>Create Event</a>
                     </li>

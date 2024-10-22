@@ -24,7 +24,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 
@@ -53,6 +53,7 @@ Route::group(['middleware' => ['auth','officer'], 'prefix' => 'officer', 'as' =>
     Route::get('/ceate-event', [EventController::class, 'createEvent'])->name('createEvent');
     Route::post('/store-event', [EventController::class, 'storeEvent'])->name('storeEvent');
     Route::get('/export-attendance', [EventController::class, 'export'])->name('export');
+    Route::post('/attendance-cutoff', [ScanQrController::class, 'sendCutOff'])->name('sendCutOff');
 });
 //STUDENT ROUTES
 Route::group(['middleware' => ['auth','student'], 'prefix' => 'student', 'as' => 'student.'], function(){

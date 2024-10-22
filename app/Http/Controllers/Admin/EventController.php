@@ -25,6 +25,7 @@ class EventController extends Controller
         $event_record = 1;
         $year = "2021-2022";
 
+
         return Excel::download(new AttendanceExport($event_record, $year), 'attendance.xlsx');
     }
 

@@ -37,7 +37,7 @@
         <thead>
             <!-- Main Title Row -->
             <tr>
-                <th style="border: 2px solid black; text-align: center;" rowspan="3">NAMES</th>
+                <th style="border: 2px solid black; text-align: center;" rowspan="4">NAMES</th>
                 @php
                     // Group attendance by event
                     $groupedByEvent = $attendance->groupBy('event_record_id');
@@ -45,22 +45,22 @@
 
                 @foreach ($groupedByEvent as $eventId => $records)
                     @php
-                        $eventDays = $records->groupBy('event_day'); // Group by event_day
-                        $numberOfDays = count($eventDays); // Get the number of unique event_days
-                        $colspan = $numberOfDays * 6; // Calculate colspan dynamically (6 columns per day)
+                        $eventDays = $records->groupBy('event_day');
+                        $numberOfDays = count($eventDays);
+                        $colspan = $numberOfDays * 6;
                     @endphp
                     <th colspan="{{ $colspan }}" style="border: 2px solid black; text-align: center;">
                         Event: {{ $records->first()->event->title }}
                     </th>
                 @endforeach
-                <th rowspan="3" colspan="1" style="border: 2px solid black; text-align: center;">OVERALL TOTAL FINES</th>
+                <th rowspan="4" colspan="1" style="border: 2px solid black; text-align: center;">OVERALL TOTAL FINES</th>
             </tr>
 
             <!-- Event Day Row -->
             <tr>
                 @foreach ($groupedByEvent as $eventId => $records)
                     @php
-                        $eventDays = $records->groupBy('event_day'); // Group by event_day
+                        $eventDays = $records->groupBy('event_day');
                     @endphp
                     @foreach ($eventDays as $event_day => $userRecords)
                         <th colspan="6" style="border: 2px solid black; text-align: center;">
@@ -68,7 +68,16 @@
                         </th>
                     @endforeach
                 @endforeach
+            </tr>
 
+            <!-- Morning & Afternoon Row -->
+            <tr>
+                @foreach ($groupedByEvent as $eventId => $records)
+                    @foreach ($records->groupBy('event_day') as $event_day => $userRecords)
+                        <th colspan="3" style="border: 2px solid black; text-align: center;">Morning</th>
+                        <th colspan="3" style="border: 2px solid black; text-align: center;">Afternoon</th>
+                    @endforeach
+                @endforeach
             </tr>
 
             <!-- Session Headers -->
@@ -85,10 +94,11 @@
                 @endforeach
             </tr>
         </thead>
+
         <!-- User Rows -->
         <tbody>
             @php
-                // Collect user attendance grouped by user
+
                 $userGroupedRecords = $attendance->groupBy('user_id');
             @endphp
 
@@ -98,69 +108,81 @@
                         {{ $userAttendance->first()->user->first_name }} {{ $userAttendance->first()->user->last_name }}
                     </td>
                     @php
-                        // Initialize overall fines for this user
+
                         $overallTotalFines = 0;
                     @endphp
 
                     @foreach ($groupedByEvent as $eventId => $records)
                         @foreach ($records->groupBy('event_day') as $event_day => $dayRecords)
                             @php
-                                $morningLogin = 0;
-                                $morningLogout = 0;
-                                $afternoonLogin = 0;
-                                $afternoonLogout = 0;
+                                $morningLogin = '-';
+                                $morningLogout = '-';
+                                $afternoonLogin = '-';
+                                $afternoonLogout = '-';
 
-                                // Calculate totals for this user on this day
-                                $foundRecord = false; // Track if the user has records for this event/day
+
+                                $hasMorningSession = false;
+                                $hasAfternoonSession = false;
+
+
+                                $foundRecord = false;
                                 foreach ($dayRecords as $record) {
                                     if ($record->user_id == $userId) {
-                                        $foundRecord = true; // Found a record for this user
+                                        $foundRecord = true;
                                         if ($record->session == 'Morning') {
-                                            $morningLogin += ($record->login_log == 0 ? 25 : ($record->login_log == 1 ? 0 : $record->login_log));
-                                            $morningLogout += ($record->logout_log == 0 ? 25 : ($record->logout_log == 1 ? 0 : $record->logout_log));
+                                            $hasMorningSession = true;
+                                            $morningLogin = ($record->login_log == 0 ? 25 : ($record->login_log == 1 ? 0 : $record->login_log));
+                                            $morningLogout = ($record->logout_log == 0 ? 25 : ($record->logout_log == 1 ? 0 : $record->logout_log));
                                         }
                                         if ($record->session == 'Afternoon') {
-                                            $afternoonLogin += ($record->login_log == 0 ? 25 : ($record->login_log == 1 ? 0 : $record->login_log));
-                                            $afternoonLogout += ($record->logout_log == 0 ? 25 : ($record->logout_log == 1 ? 0 : $record->logout_log));
+                                            $hasAfternoonSession = true;
+                                            $afternoonLogin = ($record->login_log == 0 ? 25 : ($record->login_log == 1 ? 0 : $record->login_log));
+                                            $afternoonLogout = ($record->logout_log == 0 ? 25 : ($record->logout_log == 1 ? 0 : $record->logout_log));
                                         }
                                     }
                                 }
 
-                                $morningTotal = $morningLogin + $morningLogout;
-                                $afternoonTotal = $afternoonLogin + $afternoonLogout;
+                                $morningTotal = $hasMorningSession ? $morningLogin + $morningLogout : '-';
+                                $afternoonTotal = $hasAfternoonSession ? $afternoonLogin + $afternoonLogout : '-';
 
-                                // Calculate the overall total fines for this user
-                                $overallTotalFines += $morningTotal + $afternoonTotal;
+
+                                if ($hasMorningSession || $hasAfternoonSession) {
+                                    $overallTotalFines += ($morningTotal !== '-' ? $morningTotal : 0) + ($afternoonTotal !== '-' ? $afternoonTotal : 0);
+                                }
                             @endphp
 
+                            <!-- Morning Session Columns -->
                             <td style="border: 1px solid black; text-align: center;">
-                                {{ $foundRecord ? $morningLogin : '-' }}
+                                {{ $hasMorningSession ? $morningLogin : '-' }}
                             </td>
                             <td style="border: 1px solid black; text-align: center;">
-                                {{ $foundRecord ? $morningLogout : '-' }}
+                                {{ $hasMorningSession ? $morningLogout : '-' }}
                             </td>
                             <td style="border: 1px solid black; color: red; text-align: center;">
-                                <b>{{ $foundRecord ? $morningTotal : '-' }}</b>
+                                <b>{{ $morningTotal }}</b>
+                            </td>
+
+                            <!-- Afternoon Session Columns -->
+                            <td style="border: 1px solid black; text-align: center;">
+                                {{ $hasAfternoonSession ? $afternoonLogin : '-' }}
                             </td>
                             <td style="border: 1px solid black; text-align: center;">
-                                {{ $foundRecord ? $afternoonLogin : '-' }}
-                            </td>
-                            <td style="border: 1px solid black; text-align: center;">
-                                {{ $foundRecord ? $afternoonLogout : '-' }}
+                                {{ $hasAfternoonSession ? $afternoonLogout : '-' }}
                             </td>
                             <td style="border: 1px solid black; color: red; text-align: center;">
-                                <b>{{ $foundRecord ? $afternoonTotal : '-' }}</b>
+                                <b>{{ $afternoonTotal }}</b>
                             </td>
                         @endforeach
                     @endforeach
 
-                    <td  style="border: 1px solid black; text-align: center;">
+                    <td style="border: 1px solid black; text-align: center;">
                         <strong>{{ $overallTotalFines }}</strong>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+
 </body>
 
 </html>

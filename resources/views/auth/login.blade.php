@@ -92,7 +92,7 @@
                     <div class="login-content">
                         <div class="login-logo">
                             <a href="#">
-                                <img src="images/icon/Bits.png" alt="CoolAdmin">
+                                <img src="{{ asset('asset/images/RENEW-LOGO.png') }}" alt="CoolAdmin" style="width: 100px">
                                 <h1>Welcome Bits Memmbers!</h1>
                                 <x-auth-session-status class="mb-4" :status="session('status')" />
                             </a>
@@ -113,9 +113,7 @@
                                 </div>
 
                                 <div class="login-checkbox">
-                                    <label>
-                                        <input type="checkbox" name="remember">Remember Me
-                                    </label>
+
                                     <label>
                                         <a href="#">Forgotten Password?</a>
                                     </label>
@@ -171,7 +169,7 @@
                             <div class="register-link">
                                 <p>
                                     Don't you have account?
-                                    <a href="#">Contact your Adviser!</a>
+                                    <a href="{{ route('register') }}">Create Account!</a>
                                 </p>
                             </div>
                         </div>
