@@ -1,10 +1,12 @@
     <!-- MENU SIDEBAR-->
     <aside class="menu-sidebar d-none d-lg-block">
-        <div class="logo">
-            <a href="#">
-                <img src="{{ asset('asset/images/icon/logo.png') }}" alt="Cool Admin" />
+        <div class="logo d-flex align-items-center">
+            <a href="#" class="d-flex align-items-center">
+                <img src="{{ asset('asset/images/RENEW-LOGO.png') }}" alt="Cool Admin" class="img-fluid" style="width: 90px; height: 90px;" />
+                <h1><strong class="ms-3">BSIT</strong> </h1>
             </a>
         </div>
+
         <div class="menu-sidebar__content js-scrollbar1">
             <nav class="navbar-sidebar">
                 <ul class="list-unstyled navbar__list">

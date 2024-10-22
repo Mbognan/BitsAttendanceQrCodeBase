@@ -93,7 +93,7 @@
                         <div class="login-logo">
                             <a href="#">
                                 <img src="{{ asset('asset/images/RENEW-LOGO.png') }}" alt="CoolAdmin" style="width: 100px">
-                                <h1>Welcome Bits Memmbers!</h1>
+                                <h1>Welcome Bits Members!</h1>
                                 <x-auth-session-status class="mb-4" :status="session('status')" />
                             </a>
                         </div>

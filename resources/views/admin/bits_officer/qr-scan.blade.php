@@ -666,15 +666,26 @@
             });
         }
 
-        function showToast(message) {
-            let toast = document.getElementById("toast");
-            toast.innerText = message;
-            toast.className = "show";
+        function showToast(message, isError = false) {
+    let toast = document.getElementById("toast");
 
-            setTimeout(function() {
-                toast.className = toast.className.replace("show", "");
-            }, 2500);
-        }
+
+    if (isError) {
+        toast.style.backgroundColor = "#ffc107"; // yellow for errors
+    } else {
+        toast.style.backgroundColor = "#28a745"; // Green for success
+    }
+
+    toast.innerText = message;
+    toast.className = "show";
+
+    setTimeout(function() {
+        toast.className = toast.className.replace("show", "");
+    }, 3000);
+}
+
+
+
 
         function onScanSuccess(decodedText, decodedResult) {
             const currentTime = new Date().getTime();
@@ -713,49 +724,51 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        if (data.success) {
-                            if (data.login) {
-                                if (data.validation) {
-                                    showToast(
-                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
-                                        true);
-                                } else {
-                                    updateScanHistory(data.student);
-                                    let attendanceTable = $('#attendance-table').DataTable();
-                                    if (attendanceTable) {
-                                            attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
-                                        }
-                                    showToast(
-                                        `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                                        true);
+    if (data.success) {
+        if (data.login) {
+            if (data.validation) {
+                showToast(
+                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
+                    true  // Pass true to mark this as an error (red)
+                );
+            } else {
+                updateScanHistory(data.student);
+                let attendanceTable = $('#attendance-table').DataTable();
+                if (attendanceTable) {
+                    attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
+                }
+                showToast(
+                    `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                    false  // Pass false to indicate success (green)
+                );
+            }
+        } else {
+            if (data.validation) {
+                showToast(
+                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
+                    true
+                );
+            } else {
+                updateScanHistory(data.student);
+                let attendanceTable = $('#attendance-table').DataTable();
+                if (attendanceTable) {
+                    attendanceTable.ajax.reload(null, false);
+                }
+                showToast(
+                    `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                    false
+                );
+            }
+        }
+    } else {
+        showToast('Student not found', true);
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+    showToast('There was an error that occurred', true);
+});
 
-                                }
-                            } else {
-                                if (data.validation) {
-                                    showToast(
-                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
-                                        true);
-                                } else {
-                                    updateScanHistory(data.student);
-                                    let attendanceTable = $('#attendance-table').DataTable();
-                                    if (attendanceTable) {
-                                            attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
-                                        }
-                                    showToast(
-                                        `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                                        true);
-                                }
-                            }
-
-
-                        } else {
-                            showToast('Student not found');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showToast('There was an error that occurred');
-                    });
             }
         }
 
