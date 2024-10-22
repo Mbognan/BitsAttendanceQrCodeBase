@@ -97,7 +97,7 @@
                                 <x-auth-session-status class="mb-4" :status="session('status')" />
                             </a>
                         </div>
-                        <div class="login-form">
+                        <div class="login-form mb-4">
                             <form action="{{ route('login') }}" method="POST">
                                 @csrf
                                 <div class="form-group">

@@ -40,50 +40,7 @@
 </head>
 
 <body class="animsition">
-    {{-- <style>
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 5px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 17px;
-        }
 
-        #toast.show {
-            visibility: visible;
-            -webkit-animation: fadein 0.5s, fadeout 0.5s 2s;
-            animation: fadein 0.5s, fadeout 0.5s 2s;
-        }
-
-        @-webkit-keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
-        }
-
-        @keyframes fadein {
-            from {bottom: 0; opacity: 0;}
-            to {bottom: 30px; opacity: 1;}
-        }
-
-        @-webkit-keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
-        }
-
-        @keyframes fadeout {
-            from {bottom: 30px; opacity: 1;}
-            to {bottom: 0; opacity: 0;}
-        }
-    </style>
-     --}}
     <style>
         #toast {
             visibility: hidden;
@@ -96,7 +53,7 @@
             position: fixed;
             z-index: 1;
             top: 30px;
-            /* Changed from bottom to top */
+
             left: 50%;
             transform: translateX(-50%);
             font-size: 17px;
@@ -165,7 +122,12 @@
                 opacity: 0;
             }
 
-            /* Changed from bottom to top */
+
+        }
+
+
+        #reader video {
+            transform: scaleX(-1);
         }
     </style>
 
@@ -359,8 +321,8 @@
                                 <div class="col-md-3">
                                     <select name="event" id="event" class="form-control">
                                         <option>Please select Event</option>
-                                        @foreach ($events as $event )
-                                        <option value="{{ $event->id }}">{{ $event->title }}</option>
+                                        @foreach ($events as $event)
+                                            <option value="{{ $event->id }}">{{ $event->title }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -393,8 +355,9 @@
                             </div>
                         </div>
                         <div class="col-md-12 text-center">
+                            <img src="{{ asset('asset/images/RENEW-LOGO.png') }}" style="width: 100px; height: 100px;">
                             <h3 id="eventTitle" class="title-5 m-b-35 ">
-                                <strong class="text-primary">Attendance Log</strong><br>
+                                <strong class="text-primary">Attendance Log for BSIT</strong><br>
                                 <span class="event-detail">Event: None</span> <br>
                                 <span class="day-detail">None</span> |
                                 <span class="session-detail">Session: None</span> |
@@ -404,7 +367,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 col-lg-6">
+                        <div class="col-md-8 col-lg-8">
                             <!-- CHART-->
                             <div class="statistic-chart-1">
                                 <div id="reader" style="width: 100%; height: auto; margin: 0 auto;"></div>
@@ -412,7 +375,7 @@
                             <!-- END CHART-->
                         </div>
 
-                        <div class="col-md-6 col-lg-6">
+                        <div class="col-md-4 col-lg-4">
                             <!-- TOP CAMPAIGN-->
                             <div class="au-card au-card--no-shadow au-card--no-pad m-b-40">
                                 <div class="au-card-title"
@@ -421,9 +384,9 @@
                                     <h3 id="currentDate">>
                                         <i class="zmdi zmdi-account-calendar"></i>26 April, 2018
                                     </h3>
-                                    <button class="au-btn-plus">
+                                    {{-- <button class="au-btn-plus">
                                         <i class="zmdi zmdi-plus"></i>
-                                    </button>
+                                    </button> --}}
                                 </div>
                                 <div class="au-task js-list-load">
                                     <div class="au-task-list js-scrollbar3" id="scan-history">
@@ -431,7 +394,8 @@
 
                                     </div>
                                     <div class="au-task__footer">
-                                        <button id="submitCutOffBtn" class="au-btn au-btn-load js-load-btn">Submit Cut Off</button>
+                                        <button id="submitCutOffBtn" class="au-btn au-btn-load js-load-btn">Submit Cut
+                                            Off</button>
                                     </div>
                                 </div>
                             </div>
@@ -465,7 +429,7 @@
                     <div class="card">
                         <div class="card-body table-responsive">
                             {{ $dataTable->table() }}
-                      </div>
+                        </div>
 
                     </div>
             </section>
@@ -518,18 +482,17 @@
 
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 
-     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
-     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
-     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap4.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <script>
-
-    @if(session('success'))
-        toastr.success("{{ session('success') }}");
-    @endif
+        @if (session('success'))
+            toastr.success("{{ session('success') }}");
+        @endif
 
         const submitButton = document.getElementById('submitCutOffBtn');
         const eventDropdown = document.getElementById('event');
@@ -539,16 +502,17 @@
         const eventTitle = document.getElementById('eventTitle');
 
         function updateTitle() {
-            const selectedEvent = eventDropdown.value !== "" ? eventDropdown.options[eventDropdown.selectedIndex].text : "None";
-            const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` : "None";
+            const selectedEvent = eventDropdown.value !== "" ? eventDropdown.options[eventDropdown.selectedIndex].text :
+                "None";
+            const selectedDay = dayDropdown.value !== "0" ? ` ${dayDropdown.value}` : "None";
             const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "None";
             const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "None";
 
-            eventTitle.innerHTML = `<strong class="text-primary">Attendance Log</strong><br>
-            <span class="event-detail">Event: ${selectedEvent}</span> <br>
-            <span class="day-detail">Day: ${selectedDay}</span> |
-            <span class="session-detail">Session: ${selectedSession}</span> |
-            <span class="status-detail">Status: ${selectedStatus}</span>`;
+            eventTitle.innerHTML = `<strong class="text-primary">Attendance Log for BSIT</strong><br>
+            <span class="event-detail"> ${selectedEvent}</span> <br>
+            <span class="day-detail"> ${selectedDay}</span> <span class="text-primary">|</span>
+            <span class="session-detail"> ${selectedSession}</span> <span class="text-primary">|</span>
+            <span class="status-detail"> ${selectedStatus}</span>`;
 
         }
         eventDropdown.addEventListener('change', updateTitle);
@@ -558,48 +522,48 @@
 
 
         async function submitCutOffData() {
-        const selectedEvent = eventDropdown.value;
-        const selectedDay = dayDropdown.value;
-        const selectedSession = sessionDropdown.value;
-        const selectedStatus = statusDropdown.value;
+            const selectedEvent = eventDropdown.value;
+            const selectedDay = dayDropdown.value;
+            const selectedSession = sessionDropdown.value;
+            const selectedStatus = statusDropdown.value;
 
-        try {
-            const response = await fetch('/officer/attendance-cutoff', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    event: selectedEvent,
-                    day: selectedDay,
-                    sessionDay: selectedSession,
-                    status: selectedStatus
-                })
-            });
+            try {
+                const response = await fetch('/officer/attendance-cutoff', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        event: selectedEvent,
+                        day: selectedDay,
+                        sessionDay: selectedSession,
+                        status: selectedStatus
+                    })
+                });
 
-            if (response.ok) {
-            const result = await response.json();
-
-
+                if (response.ok) {
+                    const result = await response.json();
 
 
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
 
-        } else {
-            console.error('Error:', response.statusText);
-            toastr.error('An error occurred while marking students absent.');
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+
+                } else {
+                    console.error('Error:', response.statusText);
+                    toastr.error('An error occurred while marking students absent.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                toastr.error('Something went wrong.');
+            }
         }
-    } catch (error) {
-        console.error('Error:', error);
-        toastr.error('Something went wrong.');
-    }
-    }
 
 
-    submitButton.addEventListener('click', submitCutOffData);
+        submitButton.addEventListener('click', submitCutOffData);
 
         let lastScanTime = 0;
         const debounceDelay = 1000;
@@ -667,22 +631,22 @@
         }
 
         function showToast(message, isError = false) {
-    let toast = document.getElementById("toast");
+            let toast = document.getElementById("toast");
 
 
-    if (isError) {
-        toast.style.backgroundColor = "#ffc107"; // yellow for errors
-    } else {
-        toast.style.backgroundColor = "#28a745"; // Green for success
-    }
+            if (isError) {
+                toast.style.backgroundColor = "#ffc107"; // yellow for errors
+            } else {
+                toast.style.backgroundColor = "#28a745"; // Green for success
+            }
 
-    toast.innerText = message;
-    toast.className = "show";
+            toast.innerText = message;
+            toast.className = "show";
 
-    setTimeout(function() {
-        toast.className = toast.className.replace("show", "");
-    }, 3000);
-}
+            setTimeout(function() {
+                toast.className = toast.className.replace("show", "");
+            }, 3000);
+        }
 
 
 
@@ -694,6 +658,7 @@
             const selectedDay = dayDropdown.value !== "0" ? `${dayDropdown.value}` : "";
             const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "";
             const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "";
+
 
             if (currentTime - lastScanTime > debounceDelay) {
                 lastScanTime = currentTime;
@@ -724,50 +689,52 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-    if (data.success) {
-        if (data.login) {
-            if (data.validation) {
-                showToast(
-                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
-                    true  // Pass true to mark this as an error (red)
-                );
-            } else {
-                updateScanHistory(data.student);
-                let attendanceTable = $('#attendance-table').DataTable();
-                if (attendanceTable) {
-                    attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
-                }
-                showToast(
-                    `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                    false  // Pass false to indicate success (green)
-                );
-            }
-        } else {
-            if (data.validation) {
-                showToast(
-                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
-                    true
-                );
-            } else {
-                updateScanHistory(data.student);
-                let attendanceTable = $('#attendance-table').DataTable();
-                if (attendanceTable) {
-                    attendanceTable.ajax.reload(null, false);
-                }
-                showToast(
-                    `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                    false
-                );
-            }
-        }
-    } else {
-        showToast('Student not found', true);
-    }
-})
-.catch(error => {
-    console.error('Error:', error);
-    showToast('There was an error that occurred', true);
-});
+                        if (data.success) {
+                            if (data.login) {
+                                if (data.validation) {
+                                    showToast(
+                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
+                                        true // Pass true to mark this as an error (red)
+                                    );
+                                } else {
+                                    updateScanHistory(data.student);
+                                    let attendanceTable = $('#attendance-table').DataTable();
+                                    if (attendanceTable) {
+                                        attendanceTable.ajax.reload(null,
+                                        false); // Reload data without resetting pagination
+                                    }
+                                    showToast(
+
+                                        `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                        false // Pass false to indicate success (green)
+                                    );
+                                }
+                            } else {
+                                if (data.validation) {
+                                    showToast(
+                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
+                                        true
+                                    );
+                                } else {
+                                    updateScanHistory(data.student);
+                                    let attendanceTable = $('#attendance-table').DataTable();
+                                    if (attendanceTable) {
+                                        attendanceTable.ajax.reload(null, false);
+                                    }
+                                    showToast(
+                                        `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                        false
+                                    );
+                                }
+                            }
+                        } else {
+                            showToast('Student not found', true);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('There was an error that occurred', true);
+                    });
 
             }
         }
@@ -780,8 +747,8 @@
             "reader", {
                 fps: 10,
                 qrbox: {
-                    width: 250,
-                    height: 250
+                    width: 350,
+                    height: 350
                 }
             },
             false

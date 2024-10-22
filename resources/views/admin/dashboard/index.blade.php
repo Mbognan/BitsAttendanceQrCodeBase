@@ -1,20 +1,26 @@
 @extends('admin.layouts.master')
 
 @section('contents')
-<div class="row">
-    <div class="col-md-12">
-        <div class="overview-wrap">
-            <h2 class="title-1">Welcome Admin!</h2>
-            {{-- <button class="au-btn au-btn-icon au-btn--blue">
-                <i class="zmdi zmdi-plus"></i>add item</button> --}}
+<section class="welcome p-t-10">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="title-4">Welcome back
+                    <span>ADMIN!</span>
+                </h1>
+                <hr class="line-seprate">
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<div id="containerPie"></div>
+
 <div class="row row m-t-25">
 
     <div class="col-lg-6">
         <div class="au-card au-card--no-shadow au-card--no-pad m-b-40">
-            <div class="au-card-title" style="background-image:url('images/bg-title-01.jpg');">
+            <div class="au-card-title"  style="background-image: url('{{ asset('asset/images/bg-title-01.jpg') }}');">
                 <div class="bg-overlay bg-overlay--blue"></div>
                 <h3>
                     <i class="zmdi zmdi-account-calendar"></i>26 April, 2018</h3>
@@ -156,11 +162,7 @@
 <div id="container"></div>
 @endsection
 @push('scripts')
-<script src="{{ asset('code/highcharts.js') }}"></script>
-<script src="{{ asset('code/modules/sankey.js')}}"></script>
-<script src="{{ asset('code/modules/organization.js')}}"></script>
-<script src="{{ asset('code/modules/exporting.js')}}"></script>
-<script src="{{ asset('code/modules/accessibility.js')}}"></script>
+
 <script type="text/javascript">
 
     Highcharts.chart('container', {
@@ -367,6 +369,78 @@
         sourceWidth: 800,
         sourceHeight: 600
     }
+});
+
+
+
+Highcharts.chart('containerPie', {
+    chart: {
+        type: 'pie'
+    },
+    title: {
+        text: 'Egg Yolk Composition'
+    },
+    tooltip: {
+        valueSuffix: '%'
+    },
+    subtitle: {
+        text:
+        'Source:<a href="https://www.mdpi.com/2072-6643/11/3/684/htm" target="_default">MDPI</a>'
+    },
+    plotOptions: {
+        series: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: [{
+                enabled: true,
+                distance: 20
+            }, {
+                enabled: true,
+                distance: -40,
+                format: '{point.percentage:.1f}%',
+                style: {
+                    fontSize: '1.2em',
+                    textOutline: 'none',
+                    opacity: 0.7
+                },
+                filter: {
+                    operator: '>',
+                    property: 'percentage',
+                    value: 10
+                }
+            }]
+        }
+    },
+    series: [
+        {
+            name: 'Percentage',
+            colorByPoint: true,
+            data: [
+                {
+                    name: 'Water',
+                    y: 55.02
+                },
+                {
+                    name: 'Fat',
+                    sliced: true,
+                    selected: true,
+                    y: 26.71
+                },
+                {
+                    name: 'Carbohydrates',
+                    y: 1.09
+                },
+                {
+                    name: 'Protein',
+                    y: 15.5
+                },
+                {
+                    name: 'Ash',
+                    y: 1.68
+                }
+            ]
+        }
+    ]
 });
 
             </script>
