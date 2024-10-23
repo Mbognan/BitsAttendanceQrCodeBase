@@ -29,12 +29,17 @@ class AttendanceDataTable extends DataTable
 
                 return $row->user ? $row->user->first_name. ' ' . $row->user->middle_initial .' '. $row->user->last_name : 'N/A';
             })
+            ->addColumn('year_level', function($row) {
+                return $row->user ? $row->user->year_level : 'N/A';
+            })
+
             ->addColumn('event_record_id', function($row){
                 return $row->event->title;
             })
             ->editColumn('created_at', function ($row) {
                 return Carbon::parse($row->created_at)->format('F j, Y');
             })
+            ->rawColumns(['created_at', 'event_record_id', 'year_level', 'user_id'])
             ->setRowId('id');
     }
 
@@ -76,12 +81,13 @@ class AttendanceDataTable extends DataTable
         return [
 
             Column::make('user_id')->title('Name')->width(150),
+            Column::make('year_level')->title('Year Level'),
             Column::make('event_record_id')->title('Event'),
             Column::make('event_day')->title('Day'),
             Column::make('session')->title('Session'),
             Column::make('login_log'),
             Column::make('logout_log'),
-            Column::make('created_at'),
+            Column::make('created_at')->title('Date'),
         ];
     }
 

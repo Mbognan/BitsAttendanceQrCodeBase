@@ -70,9 +70,9 @@ class EventRecordCreateDataTable extends DataTable
         return [
 
             Column::make('id'),
-            Column::make('title'),
-            Column::make( 'academic_year')->title('Academic Year'),
-            Column::make('year'),
+            Column::make('title')->searchable(true),
+            Column::make( 'academic_year')->title('Academic Year')->searchable(true),
+            Column::make('year')->searchable(true),
             Column::computed('action')
             ->exportable(false)
             ->printable(false)

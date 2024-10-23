@@ -416,7 +416,7 @@
                             <div class="rs-select2--light rs-select2--sm">
                                 <select class="js-select2" name="time">
                                     <option selected="selected">Today</option>
-                                    <option value="">3 Days</option>
+                                    <option value="">Day 1</option>
                                     <option value="">1 Week</option>
                                 </select>
                                 <div class="dropDownSelect2"></div>
@@ -480,7 +480,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
-    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+
 
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
@@ -488,7 +488,7 @@
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
     <script>
         @if (session('success'))
             toastr.success("{{ session('success') }}");
@@ -550,7 +550,7 @@
 
                     setTimeout(() => {
                         window.location.reload();
-                    }, 2000);
+                    }, );
 
                 } else {
                     console.error('Error:', response.statusText);
