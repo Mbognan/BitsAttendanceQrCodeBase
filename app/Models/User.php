@@ -25,7 +25,9 @@ class User extends Authenticatable
         'student_id',
         'year_level',
         'email',
+        'status',
         'password',
+        'officer_status'
     ];
 
     /**

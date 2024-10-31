@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth','admin'], 'prefix' => 'admin', 'as' => 'ad
     Route::get('/add-bits-officer', [BitsOfficerController::class, 'index'])->name('index');
     Route::get('/add-bits-officer/add-item', [BitsOfficerController::class, 'create'])->name('create');
     Route::post('/add-bits-officer-store', [BitsOfficerController::class, 'store'])->name('store');
+    Route::post('/status-toggle', [BitsOfficerController::class, 'toggle'])->name('toggle.status');
 
 });
 // OFFICER ROUTES

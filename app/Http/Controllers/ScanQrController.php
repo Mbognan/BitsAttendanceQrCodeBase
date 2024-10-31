@@ -245,7 +245,6 @@ class ScanQrController extends Controller
 public function sendCutOff(Request $request){
     $users = User::where('user_type', 'student')->get();
 
-
     $attendedUsers = Attendace::where('event_record_id', $request->event)
         ->where('event_day', $request->day)
         ->where('session', $request->sessionDay)
@@ -253,12 +252,22 @@ public function sendCutOff(Request $request){
         ->pluck('user_id');
 
 
-        $studentsWithoutAttendance = User::where('user_type', 'student')
+    $studentsWithoutAttendance = User::where('user_type', 'student')
+        ->where('status', 1) // Only active students
         ->whereNotIn('id', $attendedUsers)
         ->get();
 
 
-        foreach ($studentsWithoutAttendance as $student){
+    foreach ($studentsWithoutAttendance as $student) {
+
+        $existingAttendance = Attendace::where('user_id', $student->id)
+            ->where('event_record_id', $request->event)
+            ->where('event_day', $request->day)
+            ->where('session', $request->sessionDay)
+            ->first();
+
+
+        if (!$existingAttendance) {
             Attendace::create([
                 'user_id' => $student->id,
                 'event_record_id' => $request->event,
@@ -270,13 +279,11 @@ public function sendCutOff(Request $request){
                 'created_at' => now(),
             ]);
         }
-
-        Flasher::addSuccess('Absent students marked successfully.');
-
-
-
-        return response()->json(['status' => 'success', 'message' => 'Absent students marked successfully.']);
-
     }
+
+    Flasher::addSuccess('Absent students marked successfully.');
+
+    return response()->json(['status' => 'success', 'message' => 'Absent students marked successfully.']);
+}
 }
 

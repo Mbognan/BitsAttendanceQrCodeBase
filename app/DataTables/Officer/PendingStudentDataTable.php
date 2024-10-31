@@ -28,7 +28,7 @@ class PendingStudentDataTable extends DataTable
                 return $row->first_name . ' ' . $row->middle_initial . ' ' . $row->last_name;
             })
             ->addColumn('status', function($query){
-                if($query->status == '0'){
+                if($query->status == 0){
                     return '<span class="badge btn-warning">pending</span>';
                 }
             })

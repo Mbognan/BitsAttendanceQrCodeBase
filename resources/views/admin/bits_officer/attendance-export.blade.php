@@ -47,13 +47,14 @@
                     @php
                         $eventDays = $records->groupBy('event_day');
                         $numberOfDays = count($eventDays);
-                        $colspan = $numberOfDays * 6;
+                        $colspan = $numberOfDays * 6; // Adjust column span accordingly
                     @endphp
                     <th colspan="{{ $colspan }}" style="border: 2px solid black; text-align: center;">
                         Event: {{ $records->first()->event->title }}
                     </th>
                 @endforeach
                 <th rowspan="4" colspan="1" style="border: 2px solid black; text-align: center;">OVERALL TOTAL FINES</th>
+                <th rowspan="4" colspan="1" style="border: 2px solid black; text-align: center;">TOTAL ABSENT</th>
             </tr>
 
             <!-- Event Day Row -->
@@ -98,8 +99,9 @@
         <!-- User Rows -->
         <tbody>
             @php
-
                 $userGroupedRecords = $attendance->groupBy('user_id');
+                $totalAbsentCount = 0; // To keep track of total absents
+                $totalFines =0;
             @endphp
 
             @foreach ($userGroupedRecords as $userId => $userAttendance)
@@ -108,8 +110,8 @@
                         {{ $userAttendance->first()->user->first_name }} {{ $userAttendance->first()->user->last_name }}
                     </td>
                     @php
-
-                        $overallTotalFines = 0;
+                        $overallTotalFines = 0; // Reset total fines for this user
+                        $absentCount = 0; // Reset absent count for this user
                     @endphp
 
                     @foreach ($groupedByEvent as $eventId => $records)
@@ -120,34 +122,39 @@
                                 $afternoonLogin = '-';
                                 $afternoonLogout = '-';
 
-
                                 $hasMorningSession = false;
                                 $hasAfternoonSession = false;
-
-
                                 $foundRecord = false;
+
                                 foreach ($dayRecords as $record) {
                                     if ($record->user_id == $userId) {
                                         $foundRecord = true;
+
                                         if ($record->session == 'Morning') {
                                             $hasMorningSession = true;
-                                            $morningLogin = ($record->login_log == 0 ? 25 : ($record->login_log == 1 ? 0 : $record->login_log));
-                                            $morningLogout = ($record->logout_log == 0 ? 25 : ($record->logout_log == 1 ? 0 : $record->logout_log));
+                                            // Change logic to represent absent
+                                            $morningLogin = ($record->login_log == 0 ? 1 : 0);
+                                            $morningLogout = ($record->logout_log == 0 ? 1 : 0);
                                         }
                                         if ($record->session == 'Afternoon') {
                                             $hasAfternoonSession = true;
-                                            $afternoonLogin = ($record->login_log == 0 ? 25 : ($record->login_log == 1 ? 0 : $record->login_log));
-                                            $afternoonLogout = ($record->logout_log == 0 ? 25 : ($record->logout_log == 1 ? 0 : $record->logout_log));
+                                            // Change logic to represent absent
+                                            $afternoonLogin = ($record->login_log == 0 ? 1 : 0);
+                                            $afternoonLogout = ($record->logout_log == 0 ? 1 : 0);
                                         }
                                     }
                                 }
 
+
+                                if (!$foundRecord) {
+                                    $absentCount += 1;
+                                }
+
+                                // Update total fines logic based on existing fines
                                 $morningTotal = $hasMorningSession ? $morningLogin + $morningLogout : '-';
                                 $afternoonTotal = $hasAfternoonSession ? $afternoonLogin + $afternoonLogout : '-';
-
-
-                                if ($hasMorningSession || $hasAfternoonSession) {
-                                    $overallTotalFines += ($morningTotal !== '-' ? $morningTotal : 0) + ($afternoonTotal !== '-' ? $afternoonTotal : 0);
+                                if ($morningTotal === 1 || $afternoonTotal === 1) {
+                                    $overallTotalFines += 25; // Assume a fine of 25 for being absent
                                 }
                             @endphp
 
@@ -175,12 +182,35 @@
                         @endforeach
                     @endforeach
 
+                    @php
+                        $totalAbsentCount += $absentCount; // Update total absent count globally
+                    @endphp
+
                     <td style="border: 1px solid black; text-align: center;">
                         <strong>{{ $overallTotalFines }}</strong>
+                    </td>
+                    <td style="border: 1px solid black; text-align: center;">
+                        <strong>{{ $absentCount }}</strong>
                     </td>
                 </tr>
             @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <td style="border: 1px solid black; text-align: center;"><strong>TOTALS:</strong></td>
+                @foreach ($groupedByEvent as $eventId => $records)
+                    @foreach ($records->groupBy('event_day') as $event_day => $dayRecords)
+                        <td colspan="6" style="border: 2px solid black; text-align: center;"></td>
+                    @endforeach
+                @endforeach
+                <td style="border: 1px solid black; text-align: center;">
+                    <strong>{{ $totalFines }}</strong> <!-- Overall total fines for all users -->
+                </td>
+                <td style="border: 1px solid black; text-align: center;">
+                    <strong>{{ $totalAbsentCount }}</strong> <!-- Overall total absents for all users -->
+                </td>
+            </tr>
+        </tfoot>
     </table>
 
 </body>

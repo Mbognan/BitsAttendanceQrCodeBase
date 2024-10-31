@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('user_type',['admin','officer','student']);
             $table->string('year_level');
             $table->string('email')->unique();
+            $table->boolean('officer_status')->default(0);
             $table->string('student_id')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

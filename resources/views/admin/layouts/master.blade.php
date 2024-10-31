@@ -182,7 +182,8 @@
                                                 alt="John Doe" />
                                         </div>
                                         <div class="content">
-                                            <a class="js-acc-btn" href="#">{{ auth()->user()->first_name }} {{ auth()->user()->last_name }}</a>
+                                            <a class="js-acc-btn" href="#">{{ auth()->user()->first_name }}
+                                                {{ auth()->user()->last_name }}</a>
                                         </div>
                                         <div class="account-dropdown js-dropdown">
                                             <div class="account-dropdown__body">
@@ -268,7 +269,7 @@
             Swal.fire({
                 title: "QR Code Generated",
                 text: "Do you want to send this QR Code via email?",
-                html:" Are you sure you want to send this QR Code?",
+                html: qrContainer,
                 showCancelButton: true,
                 confirmButtonText: 'Yes, Send it!',
                 cancelButtonText: 'Cancel',
@@ -301,7 +302,8 @@
                                 icon: 'success'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    $('#pendingstudent-table').DataTable().ajax.reload(null, false);
+                                    $('#pendingstudent-table').DataTable().ajax.reload(
+                                        null, false);
                                 }
                             });
 
@@ -317,7 +319,71 @@
                 }
             });
         });
+
+        $('body').on('change', '.officer-status-toggle', function(e) {
+    var officerId = $(this).data('id');
+    var newStatus = $(this).is(':checked') ? 1 : 0;
+    var checkbox = $(this);
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Make sure to check it thoroughly!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, change it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Proceed with AJAX request if user confirms
+            $.ajax({
+                url: '{{ route('admin.toggle.status') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: officerId,
+                    status: newStatus
+                },
+                success: function(response) {
+                    if(response.success) {
+                        Swal.fire({
+                            title: "Updated!",
+                            text: "Officer status has been updated.",
+                            icon: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Update Failed",
+                            text: "Failed to update officer status.",
+                            icon: "error",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        checkbox.prop('checked', !newStatus);
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: "Error",
+                        text: "An error occurred while updating the status.",
+                        icon: "error",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    checkbox.prop('checked', !newStatus);
+                }
+            });
+        } else {
+
+            checkbox.prop('checked', !newStatus);
+        }
+    });
+});
+
     </script>
+
     @stack('scripts')
 </body>
 

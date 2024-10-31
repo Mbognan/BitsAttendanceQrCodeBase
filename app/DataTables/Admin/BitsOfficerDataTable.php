@@ -31,17 +31,19 @@ class BitsOfficerDataTable extends DataTable
             ->addColumn('full_name', function ($row) {
                 return $row->first_name . ' ' . $row->middle_initial . ' ' . $row->last_name;
             })
-            ->addColumn('status', function($query){
-             $switch = '<label class="switch switch-3d switch-success mr-3">
-                      <input type="checkbox" class="switch-input" checked="true">
+            ->addColumn('officer_status', function ($row) {
+                $checked = $row->officer_status == 1 ? 'checked="true"' : '';
+                $officer_status = '<label class="switch switch-3d  switch-primary mr-3 ">
+                      <input type="checkbox" class="switch-input officer-status-toggle" data-id="' . $row->id . '" ' . $checked . '>
                       <span class="switch-label"></span>
                       <span class="switch-handle"></span>
                     </label>';
 
-                    return $switch;
+                    return $officer_status;
             })
 
-            ->rawColumns(['action','status'])
+
+            ->rawColumns(['action','officer_status'])
             ->setRowId('id');
     }
 
@@ -85,9 +87,9 @@ class BitsOfficerDataTable extends DataTable
             Column::make('full_name')
             ->title('Full Name')
             ->width(200),
-
             Column::make('student_id')->width(200),
             Column::make('email')->width(200),
+            Column::make('officer_status')->title('Authorize Officer')->addClass('text-center'),
             Column::computed('action')
             ->exportable(false)
             ->printable(false)

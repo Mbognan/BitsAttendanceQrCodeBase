@@ -36,4 +36,18 @@ class BitsOfficerController extends Controller
 
        return to_route('admin.index')->with('success', 'Successfully created!');
     }
+
+    public function toggle(Request $request){
+        $officer = User::find($request->id);
+
+        if ($officer) {
+            $officer->officer_status = $request->status;
+            $officer->save();
+
+            return response()->json(['success' => true, 'message' => 'Officer status updated successfully']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Officer not found']);
+    }
+
 }
