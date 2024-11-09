@@ -27,8 +27,15 @@ class User extends Authenticatable
         'email',
         'status',
         'password',
-        'officer_status'
+        'officer_status',
+        'payment_status'
     ];
+
+    public function getFullNameAttribute()
+    {
+        // Concatenate first, middle, and last names, handling cases where middle name might be null
+        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+    }
 
     /**
      * The attributes that should be hidden for serialization.

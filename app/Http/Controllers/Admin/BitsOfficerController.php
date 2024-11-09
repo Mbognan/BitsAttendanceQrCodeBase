@@ -50,4 +50,18 @@ class BitsOfficerController extends Controller
         return response()->json(['success' => false, 'message' => 'Officer not found']);
     }
 
+    public function toggle_payment(Request $request){
+        $officer = User::find($request->id);
+
+        if ($officer) {
+            $officer->payment_status = $request->status;
+            $officer->save();
+
+            return response()->json(['success' => true, 'message' => 'Officer status updated successfully']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Officer not found']);
+
+    }
+
 }

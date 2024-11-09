@@ -23,8 +23,6 @@
 
                 <button class="au-btn-filter" data-toggle="modal" data-target="#mediumModal">
                     <i class="zmdi zmdi-filter-list"></i>Create Event</button>
-
-
             </div>
 
         </div>
@@ -71,14 +69,22 @@
                                 </select>
                             </div>
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="cc-exp" class="control-label mb-1">Days</label>
+                                        <input id="cc-exp" name="span" type="tel" class="form-control cc-exp" value="" data-val="true" data-val-required="Please enter the card expiration" data-val-cc-exp="Please enter a valid month and year" placeholder="" autocomplete="cc-exp">
+                                        <span class="help-block" data-valmsg-for="cc-exp" data-valmsg-replace="true"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
                                     <div class="form-group">
                                         <label for="cc-exp" class="control-label mb-1">Year</label>
                                         <input id="cc-exp" name="year" type="tel" class="form-control cc-exp" value="" data-val="true" data-val-required="Please enter the card expiration" data-val-cc-exp="Please enter a valid month and year" placeholder="Ex.2021-2022" autocomplete="cc-exp">
                                         <span class="help-block" data-valmsg-for="cc-exp" data-valmsg-replace="true"></span>
                                     </div>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-4">
                                     <label for="x_card_code" class="control-label mb-1">Status</label>
                                     <div class="input-group">
                                         <select name="status" id="select" class="form-control">

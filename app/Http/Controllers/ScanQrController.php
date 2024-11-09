@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\Officer\AttendanceDataTable;
 use App\Models\Attendace;
+use App\Models\EventDay;
 use App\Models\EventRecord;
 use App\Models\User;
 use Flasher\Laravel\Facade\Flasher;
@@ -13,7 +14,9 @@ class ScanQrController extends Controller
 {
     public function indexScan(AttendanceDataTable $datatable){
         $events = EventRecord::all();
-        return $datatable->render('admin.bits_officer.qr-scan', compact('events'));
+    $event_days = EventDay::where('status', 0)->get(); // Get all EventDays that are active
+
+        return $datatable->render('admin.bits_officer.qr-scan', compact('events','event_days'));
     }
 
     // public function findScan(Request $request){

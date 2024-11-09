@@ -329,13 +329,7 @@
                                 <div class="col-md-3">
                                     <select name="day" id="day" class="form-control">
                                         <option>Please select Day</option>
-                                        <option value="Day 1">Day 1</option>
-                                        <option value="Day 2">Day 2</option>
-                                        <option value="Day 3">Day 3</option>
-                                        <option value="Day 4">Day 4</option>
-                                        <option value="Day 5">Day 5</option>
-                                        <option value="Day 6">Day 6</option>
-                                        <option value="Day 7">Day 7</option>
+                                        <!-- Event days will be populated dynamically -->
                                     </select>
                                 </div>
                                 <div class="col-md-3">
@@ -359,9 +353,6 @@
                             <h3 id="eventTitle" class="title-5 m-b-35 ">
                                 <strong class="text-primary">Attendance Log for BSIT</strong><br>
                                 <span class="event-detail">Event: None</span> <br>
-                                <span class="day-detail">None</span> |
-                                <span class="session-detail">Session: None</span> |
-                                <span class="status-detail">Status: None</span>
                             </h3>
                         </div>
                     </div>
@@ -501,24 +492,58 @@
         const statusDropdown = document.getElementById('status');
         const eventTitle = document.getElementById('eventTitle');
 
-        function updateTitle() {
-            const selectedEvent = eventDropdown.value !== "" ? eventDropdown.options[eventDropdown.selectedIndex].text :
-                "None";
-            const selectedDay = dayDropdown.value !== "0" ? ` ${dayDropdown.value}` : "None";
-            const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "None";
-            const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "None";
+       // Function to update the title dynamically based on selected values
+function updateTitle() {
+    const selectedEvent = eventDropdown.value !== "" ? eventDropdown.options[eventDropdown.selectedIndex].text : "None";
+    const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` : "None";  // Display "Day X" or "None"
+    const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "None";
+    const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "None";
 
-            eventTitle.innerHTML = `<strong class="text-primary">Attendance Log for BSIT</strong><br>
-            <span class="event-detail"> ${selectedEvent}</span> <br>
-            <span class="day-detail"> ${selectedDay}</span> <span class="text-primary">|</span>
-            <span class="session-detail"> ${selectedSession}</span> <span class="text-primary">|</span>
-            <span class="status-detail"> ${selectedStatus}</span>`;
+    eventTitle.innerHTML = `
+        <strong class="text-primary">Attendance Log for BSIT</strong><br>
+        <h1 class="event-detail">${selectedEvent}</h1> <br>
+        `;
+}
 
-        }
-        eventDropdown.addEventListener('change', updateTitle);
-        dayDropdown.addEventListener('change', updateTitle);
-        sessionDropdown.addEventListener('change', updateTitle);
-        statusDropdown.addEventListener('change', updateTitle);
+
+
+        eventDropdown.addEventListener('change', function() {
+    const selectedEventId = eventDropdown.value;
+    if (selectedEventId) {
+        loadEventDays(selectedEventId);  // Load the days when an event is selected
+    }
+});
+
+
+        // Load the event days based on the selected event
+        // Function to fetch event days and populate the dropdown
+function loadEventDays(eventId) {
+    fetch(`/officer/event-days/${eventId}`)
+        .then(response => response.json())
+        .then(eventDays => {
+            // Clear the existing options in the dayDropdown
+            dayDropdown.innerHTML = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '0'; // Default value for no day selected
+            defaultOption.textContent = 'Select Day';
+            dayDropdown.appendChild(defaultOption);
+
+            // Populate the dropdown with event days
+            eventDays.forEach(day => {
+                const option = document.createElement('option');
+                option.value = day.event_days;  // Use the event_days value
+                option.textContent = `Day ${day.event_days}`; // Display "Day X"
+                dayDropdown.appendChild(option);
+            });
+
+            // Optionally trigger title update after loading event days
+            updateTitle();
+        })
+        .catch(error => {
+            console.error('Error fetching event days:', error);
+        });
+}
 
 
         async function submitCutOffData() {
@@ -545,13 +570,9 @@
                 if (response.ok) {
                     const result = await response.json();
 
-
-
-
                     setTimeout(() => {
                         window.location.reload();
-                    }, );
-
+                    }, 500); // Reload after the submission
                 } else {
                     console.error('Error:', response.statusText);
                     toastr.error('An error occurred while marking students absent.');
@@ -562,9 +583,9 @@
             }
         }
 
-
         submitButton.addEventListener('click', submitCutOffData);
 
+        // QR scan logic (unchanged)
         let lastScanTime = 0;
         const debounceDelay = 1000;
 
@@ -578,7 +599,6 @@
         }
 
         const today = new Date();
-
         document.getElementById('currentDate').innerText = formatDate(today);
 
         let scanHistory = [];
@@ -592,21 +612,17 @@
                 hour12: true
             });
 
-
             let newEntry = {
                 name: `${student.first_name} ${student.middle_initial} ${student.last_name}`,
                 time: currentTime,
                 status: `${student.status}`
-
             };
 
             scanHistory.unshift(newEntry);
 
-
             if (scanHistory.length > 10) {
                 scanHistory.pop();
             }
-
 
             renderScanHistory();
         }
@@ -619,20 +635,19 @@
                 const taskItem = document.createElement('div');
                 taskItem.classList.add('au-task__item', 'au-task__item--danger');
                 taskItem.innerHTML = `
-            <div class="au-task__item-inner">
-                <h5 class="task">
-                    <a href="#">${entry.name}, (BITS Member)</a>
-                </h5>
-                <span class="time">${entry.status} Time ${entry.time}</span>
-            </div>
-        `;
+                    <div class="au-task__item-inner">
+                        <h5 class="task">
+                            <a href="#">${entry.name}, (BITS Member)</a>
+                        </h5>
+                        <span class="time">${entry.status} Time ${entry.time}</span>
+                    </div>
+                `;
                 historyContainer.appendChild(taskItem);
             });
         }
 
         function showToast(message, isError = false) {
             let toast = document.getElementById("toast");
-
 
             if (isError) {
                 toast.style.backgroundColor = "#ffc107"; // yellow for errors
@@ -648,9 +663,6 @@
             }, 3000);
         }
 
-
-
-
         function onScanSuccess(decodedText, decodedResult) {
             const currentTime = new Date().getTime();
 
@@ -658,7 +670,6 @@
             const selectedDay = dayDropdown.value !== "0" ? `${dayDropdown.value}` : "";
             const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "";
             const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "";
-
 
             if (currentTime - lastScanTime > debounceDelay) {
                 lastScanTime = currentTime;
@@ -674,68 +685,65 @@
                 let currentDate = currentDateTime.toLocaleDateString();
 
                 fetch('/officer/found-student', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            id: studentId,
-                            event: selectedEvent,
-                            day: selectedDay,
-                            sessionDay: selectedSession,
-                            status: selectedStatus,
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        id: studentId,
+                        event: selectedEvent,
+                        day: selectedDay,
+                        sessionDay: selectedSession,
+                        status: selectedStatus,
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            if (data.login) {
-                                if (data.validation) {
-                                    showToast(
-                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
-                                        true // Pass true to mark this as an error (red)
-                                    );
-                                } else {
-                                    updateScanHistory(data.student);
-                                    let attendanceTable = $('#attendance-table').DataTable();
-                                    if (attendanceTable) {
-                                        attendanceTable.ajax.reload(null,
-                                        false); // Reload data without resetting pagination
-                                    }
-                                    showToast(
-
-                                        `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                                        false // Pass false to indicate success (green)
-                                    );
-                                }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.login) {
+                            if (data.validation) {
+                                showToast(
+                                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
+                                    true
+                                );
                             } else {
-                                if (data.validation) {
-                                    showToast(
-                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
-                                        true
-                                    );
-                                } else {
-                                    updateScanHistory(data.student);
-                                    let attendanceTable = $('#attendance-table').DataTable();
-                                    if (attendanceTable) {
-                                        attendanceTable.ajax.reload(null, false);
-                                    }
-                                    showToast(
-                                        `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                                        false
-                                    );
+                                updateScanHistory(data.student);
+                                let attendanceTable = $('#attendance-table').DataTable();
+                                if (attendanceTable) {
+                                    attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
                                 }
+                                showToast(
+                                    `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                    false // Pass false to indicate success (green)
+                                );
                             }
                         } else {
-                            showToast('Student not found', true);
+                            if (data.validation) {
+                                showToast(
+                                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
+                                    true
+                                );
+                            } else {
+                                updateScanHistory(data.student);
+                                let attendanceTable = $('#attendance-table').DataTable();
+                                if (attendanceTable) {
+                                    attendanceTable.ajax.reload(null, false);
+                                }
+                                showToast(
+                                    `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                    false
+                                );
+                            }
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showToast('There was an error that occurred', true);
-                    });
-
+                    } else {
+                        showToast('Student not found', true);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('There was an error that occurred', true);
+                });
             }
         }
 
@@ -756,6 +764,8 @@
 
         html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     </script>
+
+
 </body>
 
 

@@ -382,6 +382,68 @@
     });
 });
 
+$('body').on('change', '.officer-payment-toggle', function(e) {
+    var officerId = $(this).data('id');
+    var newStatus = $(this).is(':checked') ? 1 : 0;
+    var checkbox = $(this);
+
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Make sure to check it thoroughly!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, change it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Proceed with AJAX request if user confirms
+            $.ajax({
+                url: '{{ route('admin.toggle_payment.status') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    id: officerId,
+                    status: newStatus
+                },
+                success: function(response) {
+                    if(response.success) {
+                        Swal.fire({
+                            title: "Updated!",
+                            text: "Officer status has been updated.",
+                            icon: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Update Failed",
+                            text: "Failed to update officer status.",
+                            icon: "error",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        checkbox.prop('checked', !newStatus);
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: "Error",
+                        text: "An error occurred while updating the status.",
+                        icon: "error",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    checkbox.prop('checked', !newStatus);
+                }
+            });
+        } else {
+
+            checkbox.prop('checked', !newStatus);
+        }
+    });
+});
+
     </script>
 
     @stack('scripts')

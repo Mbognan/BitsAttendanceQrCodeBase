@@ -7,6 +7,7 @@ use App\DataTables\Officer\EventRecordDataTable;
 use App\Exports\AttendanceExport;
 use App\Http\Controllers\Controller;
 use App\Models\Attendace;
+use App\Models\EventDay;
 use App\Models\EventRecord;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -36,15 +37,32 @@ class EventController extends Controller
             'academic_year' => ['required'],
             'year' => ['required'],
             'status' => ['required'],
+            'span' => ['required', 'integer'],
         ]);
 
-        EventRecord::create([
+
+        $event = EventRecord::create([
             'title' => $request->title,
             'academic_year' => $request->academic_year,
             'year' => $request->year,
-            'status' => $request->status
+            'status' => $request->status,
+            'span' => $request->span
         ]);
 
+
+        $span = (int) $request->span;
+
+        $sessions = ['morning', 'afternoon'];
+
+        for ($day = 1; $day <= $span; $day++) {
+            foreach ($sessions as $session) {
+                EventDay::create([
+                    'event_record_id' => $event->id,
+                    'event_days' => $day,
+                    'session' => $session,
+                ]);
+            }
+        }
         return redirect()->back()->with('success', 'Event created successfully!');
 
     }

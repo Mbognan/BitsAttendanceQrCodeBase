@@ -42,8 +42,19 @@ class BitsOfficerDataTable extends DataTable
                     return $officer_status;
             })
 
+            ->addColumn('payment_status', function ($row) {
+                $checked = $row->payment_status == 1 ? 'checked="true"' : '';
+                $payment_status = '<label class="switch switch-3d  switch-primary mr-3 ">
+                      <input type="checkbox" class="switch-input officer-payment-toggle" data-id="' . $row->id . '" ' . $checked . '>
+                      <span class="switch-label"></span>
+                      <span class="switch-handle"></span>
+                    </label>';
 
-            ->rawColumns(['action','officer_status'])
+                    return $payment_status;
+            })
+
+
+            ->rawColumns(['action','officer_status','payment_status'])
             ->setRowId('id');
     }
 
@@ -88,8 +99,8 @@ class BitsOfficerDataTable extends DataTable
             ->title('Full Name')
             ->width(200),
             Column::make('student_id')->width(200),
-            Column::make('email')->width(200),
             Column::make('officer_status')->title('Authorize Officer')->addClass('text-center'),
+            Column::make('payment_status')->title('Payment Authorize')->addClass('text-center'),
             Column::computed('action')
             ->exportable(false)
             ->printable(false)

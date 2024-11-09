@@ -47,7 +47,7 @@
                     @if(auth()->user()->officer_status == 1)
                     <li  @if (Route::currentRouteName() === 'officer.index.scanqr') class="active has-sub" @endif>
                         <a href="{{ route('officer.index.scanqr') }}">
-                        <i class="fas fa-users"></i>Scan QR Code</a>
+                        <i class="fa fa-qrcode"></i>Scan QR Code</a>
                     </li>
                     @endif
 
@@ -65,6 +65,13 @@
                         <a href="{{ route('officer.createEvent') }}">
                             <i class="fas fa-table"></i>Create Event</a>
                     </li>
+                    @if (auth()->user()->payment_status == 1)
+                    <li  @if (Route::currentRouteName() === 'officer.index.payment') class="active has-sub" @endif>
+                        <a href="{{ route('officer.index.payment') }}">
+                        <i class="fas fa-users"></i>Payment</a>
+                    </li>
+                    @endif
+
                     @endif
 
                 </ul>

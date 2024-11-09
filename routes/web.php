@@ -4,10 +4,12 @@ use App\Http\Controllers\Admin\BitsOfficerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\OfficerDashbaord;
+use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScanQrController;
 use App\Mail\QrcodeMail;
+use App\Models\EventDay;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -41,7 +43,7 @@ Route::group(['middleware' => ['auth','admin'], 'prefix' => 'admin', 'as' => 'ad
     Route::get('/add-bits-officer/add-item', [BitsOfficerController::class, 'create'])->name('create');
     Route::post('/add-bits-officer-store', [BitsOfficerController::class, 'store'])->name('store');
     Route::post('/status-toggle', [BitsOfficerController::class, 'toggle'])->name('toggle.status');
-
+    Route::post('/status-toggle-payment', [BitsOfficerController::class, 'toggle_payment'])->name('toggle_payment.status');
 });
 // OFFICER ROUTES
 Route::group(['middleware' => ['auth','officer'], 'prefix' => 'officer', 'as' => 'officer.'], function(){
@@ -55,6 +57,14 @@ Route::group(['middleware' => ['auth','officer'], 'prefix' => 'officer', 'as' =>
     Route::post('/store-event', [EventController::class, 'storeEvent'])->name('storeEvent');
     Route::get('/export-attendance', [EventController::class, 'export'])->name('export');
     Route::post('/attendance-cutoff', [ScanQrController::class, 'sendCutOff'])->name('sendCutOff');
+    Route::get('/payment-attendance', [PaymentController::class, 'indexPayment'])->name('index.payment');
+    Route::get('/get-payment-info/{id}', [PaymentController::class, 'edit'])->name('payment.edit');
+    Route::post('/payment-received/{id}', [PaymentController::class, 'paid'])->name('.paid.index');
+
+    Route::get('/event-days/{eventId}', function ($eventId) {
+        $eventDays = EventDay::where('event_record_id', $eventId)->get();
+        return response()->json($eventDays);
+    });
 });
 //STUDENT ROUTES
 Route::group(['middleware' => ['auth','student'], 'prefix' => 'student', 'as' => 'student.'], function(){

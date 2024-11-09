@@ -39,7 +39,12 @@ class AttendanceExport implements FromView,ShouldAutoSize
 
         $attendance = Attendace::with('user', 'event')
         ->orderBy('event_record_id')
-        ->orderBy('event_day')->get();
+        ->orderBy('event_day')->get()
+        ->sortBy(function($record) {
+            return $record->user->last_name;
+        });
+
+
 
 
 
