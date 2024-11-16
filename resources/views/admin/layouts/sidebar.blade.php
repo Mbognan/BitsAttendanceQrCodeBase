@@ -3,7 +3,7 @@
         <div class="logo d-flex align-items-center">
             <a href="#" class="d-flex align-items-center">
                 <img src="{{ asset('asset/images/RENEW-LOGO.png') }}" alt="Cool Admin" class="img-fluid" style="width: 90px; height: 90px;" />
-                <h1><strong class="ms-3">BSIT</strong> </h1>
+                <h1><strong class="ms-3">BITS</strong> </h1>
             </a>
         </div>
 

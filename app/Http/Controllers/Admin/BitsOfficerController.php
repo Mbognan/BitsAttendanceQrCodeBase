@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\DataTables\Admin\BitsOfficerDataTable;
+use App\DataTables\PromotionDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Flasher\Laravel\Facade\Flasher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,8 +19,8 @@ class BitsOfficerController extends Controller
         return $datatable->render('admin.add_bits_officer.index');
     }
 
-    public function create():View{
-        return view('admin.add_bits_officer.create');
+    public function create(PromotionDataTable $dataTable){
+        return $dataTable->render('admin.add_bits_officer.create');
     }
 
 
@@ -61,6 +63,40 @@ class BitsOfficerController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Officer not found']);
+
+    }
+
+    public function promotion(Request $request){
+
+
+        try {
+            $user = User::findOrFail($request->id);
+            $user->user_type = 'officer';
+            $user->save();
+            return response()->json(['success' => true,'message' => 'Promoted successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => true,'message' => 'Failed to send email.'], 500);
+        }
+
+
+
+
+    }
+
+    public function demote(Request $request){
+
+
+        try {
+            $user = User::findOrFail($request->id);
+            $user->user_type = 'student';
+            $user->save();
+            return response()->json(['success' => true,'message' => 'Demoted successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => true,'message' => 'Failed to send email.'], 500);
+        }
+
+
+
 
     }
 

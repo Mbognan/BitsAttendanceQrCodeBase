@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScanQrController;
 use App\Mail\QrcodeMail;
 use App\Models\EventDay;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -44,6 +45,9 @@ Route::group(['middleware' => ['auth','admin'], 'prefix' => 'admin', 'as' => 'ad
     Route::post('/add-bits-officer-store', [BitsOfficerController::class, 'store'])->name('store');
     Route::post('/status-toggle', [BitsOfficerController::class, 'toggle'])->name('toggle.status');
     Route::post('/status-toggle-payment', [BitsOfficerController::class, 'toggle_payment'])->name('toggle_payment.status');
+    Route::post('/promotion', [BitsOfficerController::class, 'promotion'])->name('promotion.index');
+    Route::post('/demote', [BitsOfficerController::class, 'demote'])->name('demote.index');
+
 });
 // OFFICER ROUTES
 Route::group(['middleware' => ['auth','officer'], 'prefix' => 'officer', 'as' => 'officer.'], function(){
@@ -59,12 +63,23 @@ Route::group(['middleware' => ['auth','officer'], 'prefix' => 'officer', 'as' =>
     Route::post('/attendance-cutoff', [ScanQrController::class, 'sendCutOff'])->name('sendCutOff');
     Route::get('/payment-attendance', [PaymentController::class, 'indexPayment'])->name('index.payment');
     Route::get('/get-payment-info/{id}', [PaymentController::class, 'edit'])->name('payment.edit');
-    Route::post('/payment-received/{id}', [PaymentController::class, 'paid'])->name('.paid.index');
+    Route::post('/payment-received', [PaymentController::class, 'paid'])->name('paid.index');
 
     Route::get('/event-days/{eventId}', function ($eventId) {
         $eventDays = EventDay::where('event_record_id', $eventId)->get();
         return response()->json($eventDays);
     });
+
+    Route::get('/sessions/{eventId}/{dayId}', function ($eventId, $dayId) {
+
+        $sessions = DB::table('sessions')
+            ->where('event_record_id', $eventId)
+            ->where('day_id', $dayId)
+            ->get(['session', 'login_status', 'logout_status']); // Select the relevant fields
+
+        return response()->json($sessions);
+    });
+
 });
 //STUDENT ROUTES
 Route::group(['middleware' => ['auth','student'], 'prefix' => 'student', 'as' => 'student.'], function(){

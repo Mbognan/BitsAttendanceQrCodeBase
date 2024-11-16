@@ -5,13 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class Session extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'treasurer_name',
-        'status',
+        'day_id',
+        'session',
+        'event_record_id',
+        'login_status',
+        'logout_status',
+
     ];
 }

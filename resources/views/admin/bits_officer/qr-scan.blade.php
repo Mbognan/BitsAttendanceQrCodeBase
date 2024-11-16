@@ -331,6 +331,7 @@
                                         <option>Please select Day</option>
                                         <!-- Event days will be populated dynamically -->
                                     </select>
+
                                 </div>
                                 <div class="col-md-3">
                                     <select name="session" id="sessionDay" class="form-control">
@@ -349,7 +350,8 @@
                             </div>
                         </div>
                         <div class="col-md-12 text-center">
-                            <img src="{{ asset('asset/images/RENEW-LOGO.png') }}" style="width: 100px; height: 100px;">
+                            <img src="{{ asset('asset/images/RENEW-LOGO.png') }}"
+                                style="width: 100px; height: 100px;">
                             <h3 id="eventTitle" class="title-5 m-b-35 ">
                                 <strong class="text-primary">Attendance Log for BSIT</strong><br>
                                 <span class="event-detail">Event: None</span> <br>
@@ -394,35 +396,7 @@
                         </div>
 
                     </div>
-                    <div class="table-data__tool">
-                        <div class="table-data__tool-left">
-                            <div class="rs-select2--light rs-select2--md">
-                                <select class="js-select2" name="property">
-                                    <option selected="selected">All Properties</option>
-                                    <option value="">Option 1</option>
-                                    <option value="">Option 2</option>
-                                </select>
-                                <div class="dropDownSelect2"></div>
-                            </div>
-                            <div class="rs-select2--light rs-select2--sm">
-                                <select class="js-select2" name="time">
-                                    <option selected="selected">Today</option>
-                                    <option value="">Day 1</option>
-                                    <option value="">1 Week</option>
-                                </select>
-                                <div class="dropDownSelect2"></div>
-                            </div>
-                            <button class="au-btn-filter">
-                                <i class="zmdi zmdi-filter-list"></i>filters</button>
-                        </div>
 
-                    </div>
-                    <div class="card">
-                        <div class="card-body table-responsive">
-                            {{ $dataTable->table() }}
-                        </div>
-
-                    </div>
             </section>
 
 
@@ -492,31 +466,33 @@
         const statusDropdown = document.getElementById('status');
         const eventTitle = document.getElementById('eventTitle');
 
-       // Function to update the title dynamically based on selected values
-function updateTitle() {
-    const selectedEvent = eventDropdown.value !== "" ? eventDropdown.options[eventDropdown.selectedIndex].text : "None";
-    const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` : "None";  // Display "Day X" or "None"
-    const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "None";
-    const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "None";
 
-    eventTitle.innerHTML = `
-        <strong class="text-primary">Attendance Log for BSIT</strong><br>
+
+        // Function to update the title dynamically based on selected values
+        function updateTitle() {
+            const selectedEvent = eventDropdown.value !== "" ? eventDropdown.options[eventDropdown.selectedIndex].text :
+                "None";
+            const selectedDay = dayDropdown.value !== "0" ? `Day ${dayDropdown.value}` :
+                "None"; // Display "Day X" or "None"
+            const selectedSession = sessionDropdown.value !== "0" ? sessionDropdown.value : "None";
+            const selectedStatus = statusDropdown.value !== "0" ? statusDropdown.value : "None";
+
+            eventTitle.innerHTML = `
+        <strong class="text-primary">Attendance Log for BITS</strong><br>
         <h1 class="event-detail">${selectedEvent}</h1> <br>
         `;
-}
+        }
 
 
 
         eventDropdown.addEventListener('change', function() {
-    const selectedEventId = eventDropdown.value;
-    if (selectedEventId) {
-        loadEventDays(selectedEventId);  // Load the days when an event is selected
-    }
-});
+            const selectedEventId = eventDropdown.value;
+            if (selectedEventId) {
+                loadEventDays(selectedEventId); // Load the days when an event is selected
+            }
+        });
 
-
-        // Load the event days based on the selected event
-        // Function to fetch event days and populate the dropdown
+// Function to load event days based on the selected event
 function loadEventDays(eventId) {
     fetch(`/officer/event-days/${eventId}`)
         .then(response => response.json())
@@ -529,15 +505,13 @@ function loadEventDays(eventId) {
             defaultOption.textContent = 'Select Day';
             dayDropdown.appendChild(defaultOption);
 
-            // Populate the dropdown with event days
             eventDays.forEach(day => {
                 const option = document.createElement('option');
-                option.value = day.event_days;  // Use the event_days value
-                option.textContent = `Day ${day.event_days}`; // Display "Day X"
+                option.value = day.id;
+                option.textContent = `Day ${day.event_days}`;
                 dayDropdown.appendChild(option);
             });
 
-            // Optionally trigger title update after loading event days
             updateTitle();
         })
         .catch(error => {
@@ -545,8 +519,226 @@ function loadEventDays(eventId) {
         });
 }
 
+// Function to fetch and load session data
+function loadSessions(eventId, dayId) {
+    fetch(`/officer/sessions/${eventId}/${dayId}`)
+        .then(response => response.json())
+        .then(sessions => {
+            // Clear existing session options
+            sessionDropdown.innerHTML = '';
 
-        async function submitCutOffData() {
+            // Add default "Select Session" option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '0'; // Default value for no session selected
+            defaultOption.textContent = 'Select Session';
+            sessionDropdown.appendChild(defaultOption);
+
+            let allSessionsDisabled = true; // Initialize flag to check if all sessions are disabled
+
+            // Populate session dropdown based on fetched sessions
+            sessions.forEach(session => {
+                const option = document.createElement('option');
+                option.value = session.session;
+                option.textContent = session.session;
+
+                // Store session data on the option element itself for easy access later
+                option.dataset.loginStatus = session.login_status;
+                option.dataset.logoutStatus = session.logout_status;
+                console.log(session.login_status, session.logoutn_status);
+
+                if (session.login_status === 1 && session.logout_status === 1) {
+                    option.disabled = true;
+                    option.style.backgroundColor = '#f8d7da'; // Optional styling for disabled session
+                } else {
+                    allSessionsDisabled = false; // If at least one session is enabled, set this to false
+                }
+
+                sessionDropdown.appendChild(option);
+            });
+
+            // Now that all sessions have been processed, if all are disabled, handle it here
+            if (allSessionsDisabled) {
+                console.log("All sessions are disabled for this day");
+
+            }
+
+
+            sessionDropdown.addEventListener('change', handleStatusOptions);
+
+            handleStatusOptions();
+        })
+        .catch(error => {
+            console.error('Error fetching sessions:', error);
+        });
+}
+
+
+function handleStatusOptions() {
+    const logInOption = document.querySelector('option[value="login"]');
+    const logOutOption = document.querySelector('option[value="log-out"]');
+
+    // Reset login/logout options to enabled by default
+    logInOption.disabled = false;
+    logOutOption.disabled = false;
+    logInOption.style.backgroundColor = '';
+    logOutOption.style.backgroundColor = '';
+
+    // Get the selected session option
+    const selectedSession = sessionDropdown.options[sessionDropdown.selectedIndex];
+
+    // Check if a valid session is selected (not "Select Session")
+    if (selectedSession && selectedSession.value !== '0') {
+        const loginStatus = parseInt(selectedSession.dataset.loginStatus, 10);
+        const logoutStatus = parseInt(selectedSession.dataset.logoutStatus, 10);
+
+        // Disable login or logout options based on selected session's status
+        if (loginStatus === 1) {
+            logInOption.disabled = true;
+            logInOption.style.backgroundColor = '#f8d7da';
+        }
+        if (logoutStatus === 1) {
+            logOutOption.disabled = true;
+            logOutOption.style.backgroundColor = '#f8d7da';
+        }
+    }
+}
+
+eventDropdown.addEventListener('change', function () {
+    const selectedEventId = eventDropdown.value;
+    const selectedDayId = dayDropdown.value;
+
+    if (selectedEventId && selectedDayId !== "0") {
+        loadSessions(selectedEventId, selectedDayId);
+    }
+});
+
+dayDropdown.addEventListener('change', function () {
+    const selectedEventId = eventDropdown.value;
+    const selectedDayId = dayDropdown.value;
+
+    if (selectedEventId && selectedDayId !== "0") {
+        loadSessions(selectedEventId, selectedDayId);
+    }
+});
+
+        function loadEventDays(eventId) {
+            fetch(`/officer/event-days/${eventId}`)
+                .then(response => response.json())
+                .then(eventDays => {
+                    // Clear the existing options in the dayDropdown
+                    dayDropdown.innerHTML = '';
+
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '0'; // Default value for no day selected
+                    defaultOption.textContent = 'Select Day';
+                    dayDropdown.appendChild(defaultOption);
+
+                    eventDays.forEach(day => {
+                const option = document.createElement('option');
+                option.value = day.id;
+                option.textContent = `Day ${day.event_days}`;
+                dayDropdown.appendChild(option);
+            });
+
+
+                    updateTitle();
+                })
+                .catch(error => {
+                    console.error('Error fetching event days:', error);
+                });
+        }
+
+// Function to fetch and load session data
+function loadSessions(eventId, dayId) {
+    fetch(`/officer/sessions/${eventId}/${dayId}`)
+        .then(response => response.json())
+        .then(sessions => {
+            // Clear existing session options
+            sessionDropdown.innerHTML = '';
+
+            // Add default "Select Session" option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '0'; // Default value for no session selected
+            defaultOption.textContent = 'Select Session';
+            sessionDropdown.appendChild(defaultOption);
+
+            // Populate session dropdown based on fetched sessions
+            sessions.forEach(session => {
+                const option = document.createElement('option');
+                option.value = session.session;
+                option.textContent = session.session;
+
+
+                option.dataset.loginStatus = session.login_status;
+                option.dataset.logoutStatus = session.logout_status;
+
+                sessionDropdown.appendChild(option);
+            });
+
+            // Attach event listener to handle status options based on selection
+            sessionDropdown.addEventListener('change', handleStatusOptions);
+
+            // Optionally trigger initial status check
+            handleStatusOptions();
+        })
+        .catch(error => {
+            console.error('Error fetching sessions:', error);
+        });
+}
+
+// Function to dynamically disable login and logout options based on selected session status
+function handleStatusOptions() {
+    const logInOption = document.querySelector('option[value="login"]');
+    const logOutOption = document.querySelector('option[value="log-out"]');
+
+    // Reset login/logout options to enabled by default
+    logInOption.disabled = false;
+    logOutOption.disabled = false;
+    logInOption.style.backgroundColor = '';
+    logOutOption.style.backgroundColor = '';
+
+    // Get the selected session option
+    const selectedSession = sessionDropdown.options[sessionDropdown.selectedIndex];
+
+    // Check if a valid session is selected (not "Select Session")
+    if (selectedSession && selectedSession.value !== '0') {
+        const loginStatus = parseInt(selectedSession.dataset.loginStatus, 10);
+        const logoutStatus = parseInt(selectedSession.dataset.logoutStatus, 10);
+
+        // Disable login or logout options based on selected session's status
+        if (loginStatus === 1) {
+            logInOption.disabled = true;
+            logInOption.style.backgroundColor = '#f8d7da';
+        }
+        if (logoutStatus === 1) {
+            logOutOption.disabled = true;
+            logOutOption.style.backgroundColor = '#f8d7da';
+        }
+    }
+}
+
+// Add event listeners to load sessions when event or day is selected
+eventDropdown.addEventListener('change', function () {
+    const selectedEventId = eventDropdown.value;
+    const selectedDayId = dayDropdown.value;
+
+    if (selectedEventId && selectedDayId !== "0") {
+        loadSessions(selectedEventId, selectedDayId);
+    }
+});
+
+dayDropdown.addEventListener('change', function () {
+    const selectedEventId = eventDropdown.value;
+    const selectedDayId = dayDropdown.value;
+
+    if (selectedEventId && selectedDayId !== "0") {
+        loadSessions(selectedEventId, selectedDayId);
+    }
+});
+
+
+
+async function submitCutOffData() {
             const selectedEvent = eventDropdown.value;
             const selectedDay = dayDropdown.value;
             const selectedSession = sessionDropdown.value;
@@ -685,65 +877,66 @@ function loadEventDays(eventId) {
                 let currentDate = currentDateTime.toLocaleDateString();
 
                 fetch('/officer/found-student', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        id: studentId,
-                        event: selectedEvent,
-                        day: selectedDay,
-                        sessionDay: selectedSession,
-                        status: selectedStatus,
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            id: studentId,
+                            event: selectedEvent,
+                            day: selectedDay,
+                            sessionDay: selectedSession,
+                            status: selectedStatus,
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        if (data.login) {
-                            if (data.validation) {
-                                showToast(
-                                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
-                                    true
-                                );
-                            } else {
-                                updateScanHistory(data.student);
-                                let attendanceTable = $('#attendance-table').DataTable();
-                                if (attendanceTable) {
-                                    attendanceTable.ajax.reload(null, false); // Reload data without resetting pagination
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.login) {
+                                if (data.validation) {
+                                    showToast(
+                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged In!`,
+                                        true
+                                    );
+                                } else {
+                                    updateScanHistory(data.student);
+                                    let attendanceTable = $('#attendance-table').DataTable();
+                                    if (attendanceTable) {
+                                        attendanceTable.ajax.reload(null,
+                                            false); // Reload data without resetting pagination
+                                    }
+                                    showToast(
+                                        `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                        false // Pass false to indicate success (green)
+                                    );
                                 }
-                                showToast(
-                                    `Student Log In: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                                    false // Pass false to indicate success (green)
-                                );
+                            } else {
+                                if (data.validation) {
+                                    showToast(
+                                        `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
+                                        true
+                                    );
+                                } else {
+                                    updateScanHistory(data.student);
+                                    let attendanceTable = $('#attendance-table').DataTable();
+                                    if (attendanceTable) {
+                                        attendanceTable.ajax.reload(null, false);
+                                    }
+                                    showToast(
+                                        `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
+                                        false
+                                    );
+                                }
                             }
                         } else {
-                            if (data.validation) {
-                                showToast(
-                                    `Student : ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name} Already Logged Out!`,
-                                    true
-                                );
-                            } else {
-                                updateScanHistory(data.student);
-                                let attendanceTable = $('#attendance-table').DataTable();
-                                if (attendanceTable) {
-                                    attendanceTable.ajax.reload(null, false);
-                                }
-                                showToast(
-                                    `Student Logged Out: ${data.student.first_name} ${data.student.middle_initial} ${data.student.last_name}\nTime: ${currentTimeFormatted}, Date: ${currentDate}`,
-                                    false
-                                );
-                            }
+                            showToast('Student not found', true);
                         }
-                    } else {
-                        showToast('Student not found', true);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('There was an error that occurred', true);
-                });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('There was an error that occurred', true);
+                    });
             }
         }
 

@@ -37,7 +37,7 @@
                 </div>
 
                     <a href="{{ route('officer.export') }}" class="au-btn-filter">
-                        <i class="fa fa-print"></i>Import Event Records</a>
+                        <i class="fa fa-print"></i>Export Event Records</a>
             </div>
 
         </div>

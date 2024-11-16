@@ -3,16 +3,14 @@
 namespace App\Exports;
 
 use App\Models\Attendace;
-use App\Models\ResultByCategory;
 use App\Models\User;
-use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\FromView;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class AttendanceExport implements FromView,ShouldAutoSize
+class AttendanceExport implements WithMultipleSheets
 {
+    use Exportable;
+
     protected $eventRecordId;
     protected $year;
 
@@ -22,44 +20,22 @@ class AttendanceExport implements FromView,ShouldAutoSize
         $this->year = $year;
     }
 
-    public function view(): \Illuminate\Contracts\View\View
+    public function sheets(): array
     {
-        $students = User::where('user_type', 'student')->get();
+        $sheets = [];
 
+        // Fetch and group attendance data by year level
+        $attendanceByYearLevel = Attendace::with(['user', 'event'])
+            ->orderBy('event_record_id')
+            ->orderBy('event_day')
+            ->get()
+            ->groupBy('user.year_level');
 
-        // $attendance = User::where('user_type', 'student')
-        //     ->leftJoin('attendaces', 'users.id', '=', 'attendaces.user_id') // Left join to get all students
-        //     ->leftJoin('event_records', 'attendaces.event_record_id', '=', 'event_records.id') // Join events table for event details
-        //     ->select('users.*', 'attendaces.*', 'event_records.title as event_title', 'attendaces.event_day', 'attendaces.session', 'attendaces.login_log', 'attendaces.logout_log') // Select the necessary columns
-        //     ->orderBy('attendaces.event_record_id')
-        //     ->orderBy('attendaces.event_day')
-        //     ->get();
+        foreach ($attendanceByYearLevel as $yearLevel => $attendance) {
 
+            $sheets[] = new YearLevelAttendanceSheet($attendance, $yearLevel);
+        }
 
-
-        $attendance = Attendace::with('user', 'event')
-        ->orderBy('event_record_id')
-        ->orderBy('event_day')->get()
-        ->sortBy(function($record) {
-            return $record->user->last_name;
-        });
-
-
-
-
-
-
-
-    return view('admin.bits_officer.attendance-export', [
-        'attendance' => $attendance,
-        'year' => $this->year,
-    ]);
+        return $sheets;
     }
-
-    // public function title(): string
-    // {
-    //     return 'Attendance'; // You can change the title as needed
-    // }
-
-
 }

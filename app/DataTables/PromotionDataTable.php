@@ -1,10 +1,8 @@
 <?php
 
-namespace App\DataTables\Officer;
+namespace App\DataTables;
 
-use App\Models\Attendace;
-use App\Models\EventRecord;
-use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -14,7 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class EventRecordDataTable extends DataTable
+class PromotionDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -25,26 +23,25 @@ class EventRecordDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
 
-        ->addColumn('user_id', function($row) {
+            ->addColumn('action', function($query){
 
-            return $row->user ? $row->user->first_name. ' ' . $row->user->middle_initial .' '. $row->user->last_name : 'N/A';
-        })
-        ->addColumn('event_record_id', function($row){
-            return $row->event->title;
-        })
-        ->editColumn('created_at', function ($row) {
-            return Carbon::parse($row->created_at)->format('F j, Y');
-        })
+                $edit = '<a  class="item promotion-item" data-id="'.$query->id.'" ><i class="fa fa-pencil-square-o text-primary  fa-lg"></i></a>';
+                return $edit;
+            })
+            ->addColumn('full_name', function ($row) {
+                return $row->first_name . ' ' . $row->middle_initial . ' ' . $row->last_name;
+            })
 
-        ->setRowId('id');
+            ->rawColumns(['action'])
+            ->setRowId('id');
     }
 
     /**
      * Get the query source of dataTable.
      */
-    public function query(Attendace $model): QueryBuilder
+    public function query(User $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->where('user_type', 'student');
     }
 
     /**
@@ -53,7 +50,7 @@ class EventRecordDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('eventrecord-table')
+                    ->setTableId('promotion-table')
                     ->columns($this->getColumns())
                     ->minifiedAjax()
                     //->dom('Bfrtip')
@@ -75,13 +72,18 @@ class EventRecordDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('user_id')->title('Name')->width(150),
-            Column::make('event_record_id')->title('Event'),
-            Column::make('event_day')->title('Day'),
-            Column::make('session')->title('Session'),
-            Column::make('login_log'),
-            Column::make('logout_log'),
-            Column::make('created_at')->title('Date'),
+            Column::make('full_name')
+            ->title('Full Name')
+            ->width(200),
+            Column::make('email') ->width(150),
+            Column::make('student_id'),
+            Column::make('user_type'),
+            Column::computed('action')
+            ->exportable(false)
+            ->printable(false)
+            ->width(60)
+            ->addClass('text-center')->title('Promotion'),
+
         ];
     }
 
@@ -90,6 +92,6 @@ class EventRecordDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'EventRecord_' . date('YmdHis');
+        return 'Promotion_' . date('YmdHis');
     }
 }

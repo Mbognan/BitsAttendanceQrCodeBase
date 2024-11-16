@@ -115,7 +115,7 @@
                                 <div class="login-checkbox">
 
                                     <label>
-                                        <a href="#">Forgotten Password?</a>
+                                        <a href="{{ route('password.request') }}">Forgotten Password?</a>
                                     </label>
                                 </div>
                                 <button class="au-btn au-btn--block au-btn--green m-b-20" type="submit">Log in</button>

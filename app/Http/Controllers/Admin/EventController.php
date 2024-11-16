@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendace;
 use App\Models\EventDay;
 use App\Models\EventRecord;
+use App\Models\Session;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -23,10 +24,8 @@ class EventController extends Controller
     }
 
     public function export(){
-        $event_record = 1;
+        $event_record = 6;
         $year = "2021-2022";
-
-
         return Excel::download(new AttendanceExport($event_record, $year), 'attendance.xlsx');
     }
 
@@ -55,12 +54,16 @@ class EventController extends Controller
         $sessions = ['morning', 'afternoon'];
 
         for ($day = 1; $day <= $span; $day++) {
+            $eventDay = EventDay::create([
+                'event_record_id' => $event->id,
+                'event_days' => $day,
+            ]);
             foreach ($sessions as $session) {
-                EventDay::create([
-                    'event_record_id' => $event->id,
-                    'event_days' => $day,
-                    'session' => $session,
-                ]);
+               Session::create([
+                'event_record_id' => $event->id,
+                'day_id' => $eventDay->id,
+                'session' => $session,
+               ]);
             }
         }
         return redirect()->back()->with('success', 'Event created successfully!');

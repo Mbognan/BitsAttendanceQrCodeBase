@@ -49,7 +49,7 @@
                                         <div class="input-group-addon">
                                             <i class="fa fa-user"></i>
                                         </div>
-                                        <div class="form-control" id="user_name">Marjoe Frank Bacbac</div>
+                                        <div class="form-control" id="user_name"></div>
                                     </div>
                                 </div>
                                 <div class="col col-md-6">
@@ -57,10 +57,11 @@
                                         <div class="input-group-addon">
                                             <i class="fa fa-credit-card"></i>
                                         </div>
-                                       <div class="form-control" id="student_id">21-0530-320</div>
+                                       <div  class="form-control" id="student_id"></div>
+                                       <input type="hidden" id="user_id" name="user_id">
                                     </div>
                                 </div>
-                                <input type="hidden" id="user_id" >
+
                                 <div class="col col-md-12 mb-4">
                                     <div class="input-group">
                                         <div class="input-group-addon">
@@ -72,8 +73,8 @@
                                 <div class="col col-md-6 mb-4">
                                     <div class="">
                                         <blockquote class="blockquote ">
-                                            <p id="total_absent">Total Absent: 6</p>
-                                            <p id="total_fines">Total Fines: 150</p>
+                                            <p id="total_absent">Total Absent: </p>
+                                            <p id="total_fines">Total Fines: </p>
                                             <p id="status">Status: <span class="badge badge-danger">Not Paid</span></p>
                                           </blockquote>
 
@@ -92,14 +93,14 @@
                                 </div>
                             </div> --}}
 
-                        </form>
+
                     </div>
                     <input type="hidden" value="">
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" id="mark-paid" class="btn btn-primary">Paid</button>
+                <button type="button" id="mark-paid"  class="btn btn-primary">Paid</button>
             </div>
         </form>
         </div>
@@ -122,11 +123,13 @@
         url: '/officer/get-payment-info/' + userId,
         method: 'GET',
         success: function(data) {
+            console.log(data);
             $('#user_name').text(data.first_name + ' ' + (data.middle_name || '') + ' ' + data.last_name);
             $('#student_id').text(data.student_id);
             $('#email').text(data.email);
             $('#total_absent').text("Total Absent: " + data.absent_count);
-            $('#user_id').val(data.userId); // Store userId in hidden input
+
+            $('#user_id').val(data.userId);
             $('#total_fines').text("Total Fines: " + data.total_fine);
             $('#status').html("Status: " + (data.payment_status === 'Paid' ?
                 '<span class="badge badge-success">Paid</span>' :
@@ -137,19 +140,21 @@
 
 $(document).on('click', '#mark-paid', function() {
     var userId = $('#user_id').val(); // Get userId from hidden input
+    console.log('userId:', userId); // Debugging log
 
     $.ajax({
-        url: '/officer/payment-received/' + userId,
+        url: '/officer/payment-received' ,
         method: 'POST',
         data: {
-            _token: '{{ csrf_token() }}' // Include CSRF token for security
+            _token: '{{ csrf_token() }}',
+            user_id: userId,
         },
         success: function(response) {
             if (response.success) {
                 $('#status').html('Status: <span class="badge badge-success">Paid</span>');
                 $('#mediumModal_2').modal('hide'); // Close the modal
                 $('#dataTable').DataTable().ajax.reload(); // Reload the DataTable
-                toastr.success(response.message); // Show success notification
+                toastr.success(response.message);
             }
         },
         error: function(xhr) {

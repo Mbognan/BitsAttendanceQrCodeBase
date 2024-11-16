@@ -321,129 +321,250 @@
         });
 
         $('body').on('change', '.officer-status-toggle', function(e) {
-    var officerId = $(this).data('id');
-    var newStatus = $(this).is(':checked') ? 1 : 0;
-    var checkbox = $(this);
+            var officerId = $(this).data('id');
+            var newStatus = $(this).is(':checked') ? 1 : 0;
+            var checkbox = $(this);
 
-    Swal.fire({
-        title: "Are you sure?",
-        text: "Make sure to check it thoroughly!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, change it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Proceed with AJAX request if user confirms
-            $.ajax({
-                url: '{{ route('admin.toggle.status') }}',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    id: officerId,
-                    status: newStatus
-                },
-                success: function(response) {
-                    if(response.success) {
-                        Swal.fire({
-                            title: "Updated!",
-                            text: "Officer status has been updated.",
-                            icon: "success",
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Update Failed",
-                            text: "Failed to update officer status.",
-                            icon: "error",
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                        checkbox.prop('checked', !newStatus);
-                    }
-                },
-                error: function() {
-                    Swal.fire({
-                        title: "Error",
-                        text: "An error occurred while updating the status.",
-                        icon: "error",
-                        timer: 2000,
-                        showConfirmButton: false
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Make sure to check it thoroughly!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with AJAX request if user confirms
+                    $.ajax({
+                        url: '{{ route('admin.toggle.status') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            id: officerId,
+                            status: newStatus
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: "Officer status has been updated.",
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Update Failed",
+                                    text: "Failed to update officer status.",
+                                    icon: "error",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                checkbox.prop('checked', !newStatus);
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: "Error",
+                                text: "An error occurred while updating the status.",
+                                icon: "error",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            checkbox.prop('checked', !newStatus);
+                        }
                     });
+                } else {
+
                     checkbox.prop('checked', !newStatus);
                 }
             });
-        } else {
+        });
 
-            checkbox.prop('checked', !newStatus);
-        }
-    });
-});
+        $('body').on('change', '.officer-payment-toggle', function(e) {
+            var officerId = $(this).data('id');
+            var newStatus = $(this).is(':checked') ? 1 : 0;
+            var checkbox = $(this);
 
-$('body').on('change', '.officer-payment-toggle', function(e) {
-    var officerId = $(this).data('id');
-    var newStatus = $(this).is(':checked') ? 1 : 0;
-    var checkbox = $(this);
-
-    Swal.fire({
-        title: "Are you sure?",
-        text: "Make sure to check it thoroughly!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, change it!"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Proceed with AJAX request if user confirms
-            $.ajax({
-                url: '{{ route('admin.toggle_payment.status') }}',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    id: officerId,
-                    status: newStatus
-                },
-                success: function(response) {
-                    if(response.success) {
-                        Swal.fire({
-                            title: "Updated!",
-                            text: "Officer status has been updated.",
-                            icon: "success",
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Update Failed",
-                            text: "Failed to update officer status.",
-                            icon: "error",
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                        checkbox.prop('checked', !newStatus);
-                    }
-                },
-                error: function() {
-                    Swal.fire({
-                        title: "Error",
-                        text: "An error occurred while updating the status.",
-                        icon: "error",
-                        timer: 2000,
-                        showConfirmButton: false
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Make sure to check it thoroughly!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, change it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with AJAX request if user confirms
+                    $.ajax({
+                        url: '{{ route('admin.toggle_payment.status') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            id: officerId,
+                            status: newStatus
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: "Officer status has been updated.",
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Update Failed",
+                                    text: "Failed to update officer status.",
+                                    icon: "error",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                                checkbox.prop('checked', !newStatus);
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: "Error",
+                                text: "An error occurred while updating the status.",
+                                icon: "error",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            checkbox.prop('checked', !newStatus);
+                        }
                     });
+                } else {
+
                     checkbox.prop('checked', !newStatus);
                 }
             });
-        } else {
+        });
 
-            checkbox.prop('checked', !newStatus);
-        }
-    });
-});
 
+
+        $('body').on('click', '.promotion-item', function(e) {
+            var officerId = $(this).data('id');
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Please check before promoting !",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Promote!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with AJAX request if user confirms
+                    $.ajax({
+                        url: '{{ route('admin.promotion.index') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            id: officerId,
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: response.message,
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 2000);
+                            } else {
+                                Swal.fire({
+                                    title: "Update Failed",
+                                    text: response.message ||
+                                        "Failed to update officer status.",
+                                    icon: "error",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: "Error",
+                                text: "An error occurred while updating the status.",
+                                icon: "error",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+
+
+        $('body').on('click', '.demote-item', function(e) {
+            var officerId = $(this).data('id');
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Make sure to check it thoroughly before demoting!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Demote!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with AJAX request if user confirms
+                    $.ajax({
+                        url: '{{ route('admin.demote.index') }}',
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            id: officerId,
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: response.message,
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 2000);
+                            } else {
+                                Swal.fire({
+                                    title: "Update Failed",
+                                    text: response.message ||
+                                        "Failed to update officer status.",
+                                    icon: "error",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                title: "Error",
+                                text: "An error occurred while updating the status.",
+                                icon: "error",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+                }
+            });
+        });
     </script>
 
     @stack('scripts')

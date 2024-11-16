@@ -45,14 +45,15 @@ class PaymentController extends Controller
         $totalFines = $fines * $absent;
         if($userId){
             return response()->json([
-               'first_name' => $userId->first_name,
+        'first_name' => $userId->first_name,
         'middle_name' => $userId->middle_name,
         'last_name' => $userId->last_name,
         'student_id' => $userId->student_id,
         'email' => $userId->email,
         'absent_count' => $absent,
         'total_fine' => $totalFines,
-        'status' => $status
+        'status' => $status,
+        'userId' => $id,
             ]);
          }else{
             return response()->json([
@@ -61,36 +62,57 @@ class PaymentController extends Controller
             ]);
          }
     }
+    public function paid(Request $request)
+{
+    try {
 
-    public function paid(Request $request, string $id){
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($request->user_id);
+
 
         $officer = Auth::user()->full_name;
+
+
         $payment = new Payment();
+
 
         $attendance = Attendace::where('user_id', $user->id)->get();
 
-        $attendance_save = new Attendace();
-        foreach($attendance as $record){
 
-             if ($record->login_log == 0) {
-                $attendance_save->login_log = 1;
 
-                $attendance_save->save();
-            } elseif ($record->logout_log == 0) {
-                $attendance_save->logout_log = 1;
-                $attendance_save->save();
+        $attendance = Attendace::where('user_id', $user->id)->get();
+
+        foreach ($attendance as $record) {
+            if ($record->login_log == 0) {
+                $record->login_log = 1;
+                $record->save();
+            }
+
+            if ($record->logout_log == 0) {
+                $record->logout_log = 1;
+                $record->save();
             }
         }
+
+
 
         $payment->user_id = $user->id;
         $payment->treasurer_name = $officer;
         $payment->status = 'paid';
+
+
         $payment->save();
 
+
+        return redirect()->back()->with('success','Paid Successfully');
+
+    } catch (\Exception $e) {
+
         return response()->json([
-                'success' => true,
-                'message' => 'Payment marked as paid and attendance updated successfully!'
-            ]);
+            'success' => false,
+            'message' => 'There was an issue processing the payment: ' . $e->getMessage(),
+        ], 500);
     }
+}
+
+
 }

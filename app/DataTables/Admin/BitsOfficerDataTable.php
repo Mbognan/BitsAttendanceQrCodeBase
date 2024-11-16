@@ -24,9 +24,9 @@ class BitsOfficerDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addColumn('action', function($query){
-                $delete = '<a href="#" class="item denied"><i class="fa fa-trash text-danger fa-lg"></i></a>';
-                $edit = '<a href="#" class="item " ><i class="fa fa-pencil-square-o text-primary  fa-lg"></i></a>';
-                return $edit." ".$delete;
+
+                $edit = '<a href="#" class="item demote-item "  data-id="'.$query->id.'" ><i class="fa fa-pencil-square-o text-danger  fa-lg"></i></a>';
+                return $edit;
             })
             ->addColumn('full_name', function ($row) {
                 return $row->first_name . ' ' . $row->middle_initial . ' ' . $row->last_name;
@@ -105,7 +105,7 @@ class BitsOfficerDataTable extends DataTable
             ->exportable(false)
             ->printable(false)
             ->width(200)
-            ->addClass('text-center'),
+            ->addClass('text-center')->title('Demote'),
         ];
     }
 
